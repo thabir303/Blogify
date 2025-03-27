@@ -1,0 +1,27 @@
+### User Registration
+POST http://localhost:8000/api/users/
+Content-Type: application/json
+
+{
+  "username": "Tanvir Hasan",
+  "email": "abir11@yopmail.com",
+  "password": "verysecurePassWord"
+}
+ 
+### Account Activation
+POST http://localhost:8000/api/activate/
+Content-Type: application/json
+
+{
+  "email": "abir11@yopmail.com",
+  "pin": "AI2025"
+}
+
+### User Login
+POST http://localhost:8000/api/login/
+Content-Type: application/json
+
+{
+  "email": "abir11@yopmail.com",
+  "password": "verysecurePassWord"
+}
