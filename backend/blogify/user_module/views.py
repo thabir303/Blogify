@@ -10,17 +10,11 @@ from .serializers import UserRegistrationSerializer, ActivationSerializer
 from .utils import account_activate,send_pin_number
 from rest_framework_simplejwt.tokens import RefreshToken
 
+User = get_user_model()
+class UserRegistrationView(CreateAPIView):
 
-class UserRegistrationView(viewsets.ModelViewSet):
-
-    queryset = get_user_model().objects.all()
+    queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
-
-    # def create(self, request, *args, **kwargs):
-    #     print("create method called!")
-        
-    #     return super().create(request, *args, **kwargs)
-
 
     def perform_create(self, serializer):
         print(f'perform_create called')
@@ -56,7 +50,7 @@ class UserLoginView(APIView):
         
         print(f'userpassword - {user.password}')
         print(f'check_password - {user.check_password(password)}')
-
+        
         if user.check_password(password) and user.is_active:
             refresh = RefreshToken.for_user(user)
             return Response({

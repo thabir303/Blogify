@@ -1,10 +1,10 @@
 ### User Registration
-POST http://localhost:8000/api/users/
+POST http://localhost:8000/api/register/
 Content-Type: application/json
 
 {
   "username": "Tanvir Hasan",
-  "email": "abir11@yopmail.com",
+  "email": "abir190@yopmail.com",
   "password": "verysecurePassWord"
 }
  
@@ -13,8 +13,8 @@ POST http://localhost:8000/api/activate/
 Content-Type: application/json
 
 {
-  "email": "abir11@yopmail.com",
-  "pin": "AI2025"
+  "email": "abir19@yopmail.com",
+  "pin": "600258"
 }
 
 ### User Login
@@ -22,6 +22,6 @@ POST http://localhost:8000/api/login/
 Content-Type: application/json
 
 {
-  "email": "abir11@yopmail.com",
+  "email": "abir19@yopmail.com",
   "password": "verysecurePassWord"
 }

@@ -4,24 +4,28 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .utils import account_activate
 
+User = get_user_model()
 class UserRegistrationSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = get_user_model()
+        model = User
         fields = ['username','email','password']
         extra_kwargs = {
             'password' : {'write_only':True}
         }
 
-        def create(self,validate_data):
+    def create(self,validate_data):
             # password = validate_data.pop('password')
             # user = get_user_model()(**validate_data)
             # user.set_password(password)
             print("Validated Data:", validate_data)
+            # print(f"Validated Data: {User}")
+            password = validate_data.pop('password')
             try : 
-                user = get_user_model().objects.create_user(
+                user = User.objects.create_user(
                     email = validate_data['email'],
                     username = validate_data['username'],
-                    password = validate_data['password']
+                    password = password
                 )
                 # user.save()
                 print(f"User created: {user.email}")
