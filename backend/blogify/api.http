@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "username": "Tanvir Hasan",
-  "email": "abir190@yopmail.com",
+  "email": "farshid.kabir.23@gmail.com",
   "password": "verysecurePassWord"
 }
  
@@ -13,8 +13,8 @@ POST http://localhost:8000/api/activate/
 Content-Type: application/json
 
 {
-  "email": "abir19@yopmail.com",
-  "pin": "600258"
+  "email": "farshid.kabir.23@gmail.com",
+  "pin": "820893"
 }
 
 ### User Login
@@ -22,6 +22,6 @@ POST http://localhost:8000/api/login/
 Content-Type: application/json
 
 {
-  "email": "abir19@yopmail.com",
+  "email": "farshid.kabir.23@gmail.com",
   "password": "verysecurePassWord"
 }
