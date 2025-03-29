@@ -4,12 +4,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 class CustomUserManager(BaseUserManager):
-    def validate_email(self, email):
-        try:
-            validate_email(email)
-        except ValidationError:
-            raise ValueError('Invalid email address')
-        
+
     def _create_user(self, email, password, **extra_fields):
         print(f"Creating user with email: {email}")
         if not email:

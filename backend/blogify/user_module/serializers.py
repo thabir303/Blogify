@@ -6,6 +6,7 @@ from .utils import account_activate
 
 User = get_user_model()
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
 
     class Meta:
         model = User
@@ -13,7 +14,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password' : {'write_only':True}
         }
+    def validate_email(self, value):
 
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already registered.")
+        return value
+    
     def create(self,validate_data):
             # password = validate_data.pop('password')
             # user = get_user_model()(**validate_data)
