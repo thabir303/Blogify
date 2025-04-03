@@ -1,27 +1,55 @@
 ### User Registration
-POST http://localhost:8000/api/register/
+POST http://localhost:8000/api/auth/register/
 Content-Type: application/json
 
 {
-  "username": "Tanvir Hasan",
-  "email": "farshid.kabir.23@gmail.com",
+  "username": "Tanvir Hasan Abir",
+  "email": "bsse1321@iit.du.ac.bd",
   "password": "verysecurePassWord"
 }
  
 ### Account Activation
-POST http://localhost:8000/api/activate/
+POST http://localhost:8000/api/auth/activate/
 Content-Type: application/json
 
 {
-  "email": "farshid.kabir.23@gmail.com",
-  "pin": "820893"
+  "email": "bsse1321@iit.du.ac.bd",
+  "pin": "A81996"
 }
 
 ### User Login
-POST http://localhost:8000/api/login/
+POST http://localhost:8000/api/auth/login/
+Content-Type: application/json
+
+{
+  "email": "bsse1321@iit.du.ac.bd",
+  "password": "verysecurePassWord"
+}
+
+### Password reset
+POST http://localhost:8000/api/password-reset/
+Content-Type: application/json
+
+{
+  "email": "farshid.kabir.23@gmail.com"
+}
+
+### Password reset confirmation
+POST http://localhost:8000/api/password-reset-confirm/
 Content-Type: application/json
 
 {
   "email": "farshid.kabir.23@gmail.com",
-  "password": "verysecurePassWord"
+  "pin":"IA4R1R",
+  "new_password":"thisisnewPassword"
 }
+
+
+### Password reset confirmation
+GET http://localhost:8000/api/auth/token/verify/
+Content-Type: application/json
+
+{
+  "email": "farshid.kabir.23@gmail.com",
+  "pin":"IA4R1R",
+  "password": "verysecurePassWord"}
