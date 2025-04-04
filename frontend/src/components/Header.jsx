@@ -5,9 +5,9 @@ import { AppContext } from '../context/AppContext'
 
 const Header = () => {
 
-  const {userData} = useContext(AppContext)
-  console.log(userData);
-  
+  // const userData = JSON.parse(localStorage.getItem('user_data'));
+  const { userData,isLoggedin } = useContext(AppContext); // Use AppContext here
+
   return (
     <div className='flex flex-col items-center mt-20 px-4 text-center
     text-gray-800'>

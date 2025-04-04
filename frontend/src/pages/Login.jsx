@@ -40,7 +40,8 @@ function Login() {
         localStorage.setItem('user_data', JSON.stringify(userData));
 
         toast.success(`Login successful! Welcome ${userData.username}`);
-
+        SetUserData(userData);
+        SetIsLoggedin(true);
         navigate('/'); 
       } else {
         toast.error(data.message);

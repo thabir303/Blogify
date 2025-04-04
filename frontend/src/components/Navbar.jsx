@@ -7,10 +7,12 @@ import { AppContext } from '../context/AppContext'
 const Navbar = () => {
 
     const navigate = useNavigate()
-    const {userData, Logout} = useContext(AppContext)
+    const {userData,Logout} = useContext(AppContext)
+    // const userData = JSON.parse(localStorage.getItem('user_data'));
+
   return (
     <div className='w-full flex justify-between items-centerp-4 sm:p-6 sm:px-24 absolute top-0'>
-      <img src={assets.logo} alt="" className='w-28 sm:w-32'/>
+      <img  alt="" className='w-28 sm:w-32'/>
       {userData? 
         <div className='w-10 h-10 flex justify-center items-center rounded-full
         bg-black text-white relative group'>
