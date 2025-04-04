@@ -1,13 +1,26 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) =>{
 
+    const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [isLoggedin, SetIsLoggedin] = useState(false)
     const [userData, SetUserData] = useState(null)
+
+    const Logout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_data');
+        toast.success(`Logout successful!`)
+        SetIsLoggedin(false);
+        SetUserData(null);
+        navigate('/')
+    }
 
     const getAuthState = async() => {
         const accessToken = localStorage.getItem('access_token');
@@ -73,6 +86,7 @@ export const AppContextProvider = (props) =>{
         isLoggedin, SetIsLoggedin,
         userData, SetUserData,
         getAuthState,
+        Logout,
 
     }
     return (

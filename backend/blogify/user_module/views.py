@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework import serializers,status,viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model, authenticate, logout
 from .serializers import UserRegistrationSerializer, ActivationSerializer
 from .utils import account_activate,send_pin_number
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -14,12 +14,14 @@ import jwt
 
 User = get_user_model()
 class UserRegistrationView(CreateAPIView):
-    permission_classess = [AllowAny]
+    permission_classes = [AllowAny]
 
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         print(f'perform_create called')
         user = serializer.save()
         print(f'user - {user} , {user.password}')
@@ -33,7 +35,7 @@ class UserRegistrationView(CreateAPIView):
         }, status=status.HTTP_200_OK)
 
 class AccountActivationView(APIView):
-    permission_classess = [AllowAny]
+    permission_classes = [AllowAny]
 
     def post(self,request):
         email = request.data.get('email')
@@ -42,11 +44,17 @@ class AccountActivationView(APIView):
         user, message = account_activate(email,pin)
 
         if user: 
-            return Response({"message": message}, status=status.HTTP_200_OK)
-        return Response({"error": message},status=status.HTTP_400_BAD_REQUEST)
-    
+            return Response({
+                "message": message,
+                "success": True,
+            }, status=status.HTTP_200_OK)
+        return Response({
+            "success": False,
+            "error": message
+        }, status=status.HTTP_400_BAD_REQUEST)  
+      
 class UserLoginView(APIView):
-    permission_classess = [AllowAny]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         email = request.data.get('email')
@@ -82,7 +90,7 @@ class UserLoginView(APIView):
         return Response({"success": False, "message": "Invalid or inactive user."}, status=status.HTTP_400_BAD_REQUEST)
     
 class PasswordResetRequestView(APIView):
-    permission_classess = [AllowAny]
+    permission_classes = [AllowAny]
     
     def post(self,request):
         email = request.data.get('email')
@@ -96,7 +104,7 @@ class PasswordResetRequestView(APIView):
         return Response({"message":"Password reset PIN sent to your email address."},status=status.HTTP_200_OK)
     
 class PasswordResetConfirmView(APIView):
-    permission_classess = [AllowAny]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         email = request.data.get('email')
@@ -117,7 +125,6 @@ class PasswordResetConfirmView(APIView):
 
         return Response({"message":"Password successfully reset."},status=status.HTTP_200_OK)
     
-
 class TokenVerifyView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []  
@@ -150,3 +157,17 @@ class TokenVerifyView(APIView):
 
         except Exception as e:
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class UserLogoutView(APIView):
+    permission_classes = [AllowAny]
+    # authentication_classes = []  
+
+    def post(self,request):
+        # if request.user.is_authenticated:
+            logout(request)
+            response = Response({
+            'message':'Logged out successfully'
+            }, status=status.HTTP_200_OK)
+            return response
+        # else : 
+        #     return Response({"error":"User is not authenticated"},status=status.HTTP_400_BAD_REQUEST)
