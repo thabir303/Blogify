@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "username": "Tanvir Hasan Abir",
-  "email": "abirbs23@iit.du.ac.bd",
+  "email": "bsse1321@iit.du.ac.bd",
   "password": "verysecurePassWord"
 }
  
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "email": "bsse1321@iit.du.ac.bd",
-  "pin": "A81996"
+  "pin": "3B799A"
 }
 
 ### User Login

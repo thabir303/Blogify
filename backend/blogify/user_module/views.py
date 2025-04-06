@@ -35,7 +35,7 @@ class UserRegistrationView(CreateAPIView):
         }, status=status.HTTP_200_OK)
 
 class AccountActivationView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self,request):
         email = request.data.get('email')
