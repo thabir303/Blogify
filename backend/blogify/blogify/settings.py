@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'user_module',
     'corsheaders',
+    'blog_module',
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True 

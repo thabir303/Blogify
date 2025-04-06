@@ -35,7 +35,7 @@ class UserRegistrationView(CreateAPIView):
         }, status=status.HTTP_200_OK)
 
 class AccountActivationView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self,request):
         email = request.data.get('email')
@@ -126,8 +126,8 @@ class PasswordResetConfirmView(APIView):
         return Response({"message":"Password successfully reset."},status=status.HTTP_200_OK)
     
 class TokenVerifyView(APIView):
-    permission_classes = [AllowAny]
-    authentication_classes = []  
+    permission_classes = [IsAuthenticated]
+    # authentication_classes = []  
 
     def get(self, request):
         token_header = request.headers.get("Authorization")
@@ -159,7 +159,7 @@ class TokenVerifyView(APIView):
             return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserLogoutView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     # authentication_classes = []  
 
     def post(self,request):

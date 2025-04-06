@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "username": "Tanvir Hasan Abir",
-  "email": "abirbs23@iit.du.ac.bd",
+  "email": "bsse1321@iit.du.ac.bd",
   "password": "verysecurePassWord"
 }
  
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "email": "bsse1321@iit.du.ac.bd",
-  "pin": "A81996"
+  "pin": "06368R"
 }
 
 ### User Login
@@ -48,20 +48,74 @@ Content-Type: application/json
 ### Password reset confirmation
 GET http://localhost:8000/api/auth/token/verify/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTMwMDIwLCJpYXQiOjE3NDM5Mjk3MjAsImp0aSI6IjZhNzFkYzk3YjgyZTQ5MjY4ZGNkZGJhZmI5ODY3ZTEzIiwidXNlcl9pZCI6NTl9.IiSfnKklELWui2MxfavqWQs9Nx9bQLkDSatthJ8gY8k
 
 {
-  "email": "farshid.kabir.23@gmail.com",
+  "email": "bsse1321@iit.du.ac.bd",
   "pin":"IA4R1R",
   "password": "verysecurePassWord"
   
 }
 
-### Password reset confirmation
+### logout
 POST http://localhost:8000/api/auth/logout/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTMwMDIwLCJpYXQiOjE3NDM5Mjk3MjAsImp0aSI6IjZhNzFkYzk3YjgyZTQ5MjY4ZGNkZGJhZmI5ODY3ZTEzIiwidXNlcl9pZCI6NTl9.IiSfnKklELWui2MxfavqWQs9Nx9bQLkDSatthJ8gY8k
 
 {
   "email": "farshid.kabir.23@gmail.com",
   "pin":"IA4R1R",
   "new_password":"thisisnewPassword"
+}
+
+### User Login
+POST http://localhost:8000/api/auth/login/
+Content-Type: application/json
+
+{
+  "email": "bsse1321@iit.du.ac.bd",
+  "password": "verysecurePassWord"
+}
+
+### blogs creation
+POST http://localhost:8000/api/blogs/create/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM4ODA1LCJpYXQiOjE3NDM5Mzg1MDUsImp0aSI6IjE5NWE3ZDdhNjcxMzRmYzg4MGUzZWUyMjYxOTU1ZDQ2IiwidXNlcl9pZCI6NTl9.0k3mXFzo8AVsuixy7MEUbN_j1ZJlB68eBi_GIaPkm0o
+
+{
+  "title": "My First Blog Post",
+  "content": "This is the content of my first blog post.",
+  "status": "draft"
+}
+
+### blog details 
+GET http://localhost:8000/api/blogs/7/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM0Njk1LCJpYXQiOjE3NDM5MzQzOTUsImp0aSI6IjZkZGVlODdiMWQzYzRjZDI5YjRhMGUyYjMzZjZhYjAwIiwidXNlcl9pZCI6NTl9.kN7U09hZk_CKLoysjM-eZ0iai5knitarahZQyENp4NU
+
+{
+  "title": "My First Blog Post",
+  "content": "This is the content of my first blog post.",
+  "status": "draft"
+}
+
+### blog delete 
+DELETE http://localhost:8000/api/blogs/1/delete/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM1MTUzLCJpYXQiOjE3NDM5MzQ4NTMsImp0aSI6ImYyM2E4ZGM4OGE5MzQwMDY4YjI3NTQxYWZlNTAyNjUyIiwidXNlcl9pZCI6NTl9.lgnMUxHs0Vl0KbcVbyRg2Cxf_-xm06L7tvEktikuY6A
+
+{
+  "title": "Updated Blog Title",
+  "content": "Updated content for the blog.",
+  "status": "published"
+}
+
+
+### comment on blogs 
+POST http://localhost:8000/api/blogs/9/comments/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM4ODA1LCJpYXQiOjE3NDM5Mzg1MDUsImp0aSI6IjE5NWE3ZDdhNjcxMzRmYzg4MGUzZWUyMjYxOTU1ZDQ2IiwidXNlcl9pZCI6NTl9.0k3mXFzo8AVsuixy7MEUbN_j1ZJlB68eBi_GIaPkm0o
+
+{
+  "content": "Great blog post!"
 }
