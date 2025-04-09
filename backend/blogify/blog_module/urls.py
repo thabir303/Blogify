@@ -1,3 +1,4 @@
+# backend/blogify/blog_module/urls.py
 from django.urls import path
 from .views import BlogListView, BlogCreateView, BlogDetailView, BlogEditView, BlogDeleteView, CommentCreateView
 

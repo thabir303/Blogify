@@ -10,6 +10,7 @@ from .serializers import UserRegistrationSerializer, ActivationSerializer
 from .utils import account_activate,send_pin_number
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import ValidationError
 import jwt
 
 User = get_user_model()
@@ -20,19 +21,26 @@ class UserRegistrationView(CreateAPIView):
     serializer_class = UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        print(f'perform_create called')
-        user = serializer.save()
-        print(f'user - {user} , {user.password}')
-        send_pin_number(user)
-        print("Hi")
-        return Response({
-                'success': True,
-                'message': 'Registration successful! Please check your email to activate your account.',
-                'username': user.username,
-                'email': user.email,
-        }, status=status.HTTP_200_OK)
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            print(f'perform_create called')
+            user = serializer.save()
+            print(f'user - {user} , {user.password}')
+            send_pin_number(user)
+            print("Hi")
+            return Response({
+                    'success': True,
+                    'message': 'Registration successful! Please check your email to activate your account.',
+                    'username': user.username,
+                    'email': user.email,
+            }, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({
+                'success': False,
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class AccountActivationView(APIView):
     permission_classes = [AllowAny]
@@ -66,9 +74,14 @@ class UserLoginView(APIView):
         # print(f'user - {user}')
 
         try:
-            user = get_user_model().objects.get(email=email)
-        except get_user_model().DoesNotExist:
-            return Response({"error":"Invalid or inactive user."},status = status.HTTP_400_BAD_REQUEST)
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'User is not found. Please check your email and password.',
+                "error":"Invalid or inactive user."
+                },
+                status = status.HTTP_400_BAD_REQUEST)
         
         print(f'userpassword - {user.password}')
         print(f'check_password - {user.check_password(password)}')
@@ -87,7 +100,11 @@ class UserLoginView(APIView):
 
             },status=status.HTTP_200_OK)
              
-        return Response({"success": False, "message": "Invalid or inactive user."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "success": False, 
+            "message": "Invalid or inactive user."
+            }, 
+            status=status.HTTP_400_BAD_REQUEST)
     
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
@@ -114,16 +131,22 @@ class PasswordResetConfirmView(APIView):
         try :
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return Response({"error":"User not found"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                    "error":"User not found"
+                },status=status.HTTP_400_BAD_REQUEST)
         
         if user.activation_pin != pin:
-            return Response({"error":"Invalid pin number."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error":"Invalid pin number."}, 
+                status=status.HTTP_400_BAD_REQUEST)
         
         user.set_password(new_password)
         user.activation_pin = ''
         user.save()
 
-        return Response({"message":"Password successfully reset."},status=status.HTTP_200_OK)
+        return Response(
+            {"message":"Password successfully reset."},
+            status=status.HTTP_200_OK)
     
 class TokenVerifyView(APIView):
     permission_classes = [AllowAny]
@@ -132,13 +155,19 @@ class TokenVerifyView(APIView):
     def get(self, request):
         token_header = request.headers.get("Authorization")
         if not token_header:
-            return Response({"error": "Authorization token missing"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Authorization token missing"}, 
+                status=status.HTTP_400_BAD_REQUEST)
 
         try:
             token = token_header.split(" ")[1]  
             print(f"Received token: {token}") 
 
-            decoded_token = jwt.decode(token, options={"verify_signature": False, "verify_exp": True})
+            decoded_token = jwt.decode(token, options=
+                                       {
+                                           "verify_signature": False, 
+                                           "verify_exp": True
+                                       })
             print(f"Decoded token: {decoded_token}") 
 
             user_id = decoded_token.get('user_id')

@@ -7,6 +7,7 @@ import hand_wave from './hand_wave.png'
 import header_img from './header_img.png'
 import eye_open_icon from './eye_open_icon.svg'
 import eye from './eye.png'
+import blogify from './Blogify_.png'
 
 export const assets = {
     arrow_icon,
@@ -18,4 +19,5 @@ export const assets = {
     header_img,
     eye_open_icon,
     eye,
+    blogify,
 }

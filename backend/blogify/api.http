@@ -23,25 +23,25 @@ Content-Type: application/json
 
 {
   "email": "bsse1321@iit.du.ac.bd",
-  "password": "verysecurePassWord"
+  "password": "bsse1321@iit.du.ac.bd"
 }
 
 ### Password reset
-POST http://localhost:8000/api/password-reset/
+POST http://localhost:8000/api/auth/password-reset/
 Content-Type: application/json
 
 {
-  "email": "farshid.kabir.23@gmail.com"
+  "email": "bsse1321@iit.du.ac.bd"
 }
 
 ### Password reset confirmation
-POST http://localhost:8000/api/password-reset-confirm/
+POST http://localhost:8000/api/auth/password-reset-confirm/
 Content-Type: application/json
 
 {
-  "email": "farshid.kabir.23@gmail.com",
-  "pin":"IA4R1R",
-  "new_password":"thisisnewPassword"
+  "email": "bsse1321@iit.du.ac.bd",
+  "pin":"56RI95",
+  "new_password":"bsse1321@iit.du.ac.bd"
 }
 
 
@@ -73,14 +73,26 @@ POST http://localhost:8000/api/auth/login/
 Content-Type: application/json
 
 {
-  "email": "bsse1321@iit.du.ac.bd",
-  "password": "verysecurePassWord"
+  "email": "farshid.kabir.23@gmail.com",
+  "password": "thisisnewPassword"
 }
 
 ### blogs creation
 POST http://localhost:8000/api/blogs/create/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM4ODA1LCJpYXQiOjE3NDM5Mzg1MDUsImp0aSI6IjE5NWE3ZDdhNjcxMzRmYzg4MGUzZWUyMjYxOTU1ZDQ2IiwidXNlcl9pZCI6NTl9.0k3mXFzo8AVsuixy7MEUbN_j1ZJlB68eBi_GIaPkm0o
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MjM0Mjc3LCJpYXQiOjE3NDQyMzA2NzcsImp0aSI6IjYwOTFiM2Q0N2MzOTQzNmViODE4ZGMxYjdiMzNjMDYxIiwidXNlcl9pZCI6NTl9.Nxv15wQumX0EFm_hzO0XFHXa3sjby9gILKmfeOqEows
+
+{
+  "title": "My last Blog Post",
+  "content": "This is the content of my last blog post.",
+  "status": "published"
+}
+
+
+### blog list 
+GET http://localhost:8000/api/blogs/
+Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTM5Nzk5LCJpYXQiOjE3NDQxMzk0OTksImp0aSI6IjdmMjIxMjYwODhmNzRkYzY5N2MwODVjM2M1MDZhOTIwIiwidXNlcl9pZCI6NTl9.l_sMQASP4xCWqeFw-PAbPPoXj3loUCFZ47ViKQJxA7w
 
 {
   "title": "My First Blog Post",
@@ -89,14 +101,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 }
 
 ### blog details 
-GET http://localhost:8000/api/blogs/7/
+GET http://localhost:8000/api/blogs/18/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM0Njk1LCJpYXQiOjE3NDM5MzQzOTUsImp0aSI6IjZkZGVlODdiMWQzYzRjZDI5YjRhMGUyYjMzZjZhYjAwIiwidXNlcl9pZCI6NTl9.kN7U09hZk_CKLoysjM-eZ0iai5knitarahZQyENp4NU
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTM5Nzk5LCJpYXQiOjE3NDQxMzk0OTksImp0aSI6IjdmMjIxMjYwODhmNzRkYzY5N2MwODVjM2M1MDZhOTIwIiwidXNlcl9pZCI6NTl9.l_sMQASP4xCWqeFw-PAbPPoXj3loUCFZ47ViKQJxA7w
 
 {
   "title": "My First Blog Post",
   "content": "This is the content of my first blog post.",
   "status": "draft"
+}
+
+
+### blog edit 
+PUT http://localhost:8000/api/blogs/19/edit/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTQzODk1LCJpYXQiOjE3NDQxNDM1OTUsImp0aSI6IjlkY2JhNWNjM2U0NzQ1NDA5OGFhMjBkYTNkODQwMzFmIiwidXNlcl9pZCI6NTl9.x9zN0NUXVcNXpIyASgE-9hw12kVFX3rbMHuei35F0D0
+
+{
+  "title": "Updated Blog Title",
+  "content": "Updated content for the blog.",
+  "status": "published"
 }
 
 ### blog delete 
@@ -111,10 +135,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 }
 
 
+
 ### comment on blogs 
-POST http://localhost:8000/api/blogs/9/comments/
+POST http://localhost:8000/api/blogs/24/comments/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTM4ODA1LCJpYXQiOjE3NDM5Mzg1MDUsImp0aSI6IjE5NWE3ZDdhNjcxMzRmYzg4MGUzZWUyMjYxOTU1ZDQ2IiwidXNlcl9pZCI6NTl9.0k3mXFzo8AVsuixy7MEUbN_j1ZJlB68eBi_GIaPkm0o
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MjM0Mjc3LCJpYXQiOjE3NDQyMzA2NzcsImp0aSI6IjYwOTFiM2Q0N2MzOTQzNmViODE4ZGMxYjdiMzNjMDYxIiwidXNlcl9pZCI6NTl9.Nxv15wQumX0EFm_hzO0XFHXa3sjby9gILKmfeOqEows
 
 {
   "content": "Great blog post!"

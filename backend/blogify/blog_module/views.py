@@ -1,15 +1,26 @@
+# backend/blogify/blog_module/views.py
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response 
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Blog,Comment
 from .serializers import BlogSerializer,CommentSerializer
 
 
 class BlogListView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self,request):
         blogs = Blog.objects.filter(status=Blog.PUBLISHED).select_related('author')
+        
+        print(f'request user - {request}- {request.user}')
+
+        if request.user.is_authenticated:
+            blogs = blogs | Blog.objects.filter(author=request.user, status=Blog.DRAFT)
+        
+        print(f'is_authenticated check : {request.user.is_authenticated}')
+
         serializer = BlogSerializer(blogs, many = True)
         response = Response({
             'success': True,
@@ -21,7 +32,7 @@ class BlogCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
-        serializer = BlogSerializer(data = request.data, context={'request':request})
+        serializer = BlogSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save(author=request.user)
             response = Response({
@@ -37,13 +48,18 @@ class BlogCreateView(APIView):
             status=status.HTTP_400_BAD_REQUEST)
 
 class BlogDetailView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request, blog_id):
         try:
             blog =Blog.objects.get(id=blog_id)
+
             if blog.status == Blog.DRAFT and blog.author != request.user:
                 response = Response({'success': False,
-                                     'message': 'Draft blog only view by Author'}, status = status.HTTP_403_FORBIDDEN)
+                                     'message': 'Draft blog only view by Author'
+                                    }, status = status.HTTP_403_FORBIDDEN)
                 return response
+            
             serializer = BlogSerializer(blog)
             comments = Comment.objects.filter(blog=blog).select_related('user')
             comment_data = CommentSerializer(comments, many = True).data
@@ -63,6 +79,14 @@ class BlogEditView(APIView):
         try:
             blog = Blog.objects.get(id=blog_id, author = request.user)
 
+            if blog.status == Blog.PUBLISHED and request.data.get('status') == Blog.DRAFT:
+                response = Response({
+                    'success': False,
+                    'message': 'Published posts cannot be changed to draft mood.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+                return response
+
+
             serializer = BlogSerializer(blog, data = request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -70,7 +94,7 @@ class BlogEditView(APIView):
                     'success' : True,
                     'message' : 'Blog updated successfully.',
                     'blog' : serializer.data
-                },status= status.HTTP_201_CREATED)
+                },status= status.HTTP_200_OK)
                 return response
             return Response({
                 'success': False,
@@ -111,15 +135,22 @@ class CommentCreateView(APIView):
 
         try:
             blog = Blog.objects.get(id=blog_id)
-            serializer = CommentSerializer(data = request.data, context={'request': request})
-            
+
+            if not request.user.is_authenticated:
+                response = Response({
+                    'success': False,
+                    'message': 'You must be logged in to comment.',
+                }, status = status.HTTP_401_UNAUTHORIZED)
+                return response
+
+            serializer = CommentSerializer(data = request.data)
             if serializer.is_valid():
                 comment = serializer.save(blog=blog, user = request.user)
-
                 response = Response({
                     'success': True,
                     'message': 'Comment added successfully.',
-                    'comment': CommentSerializer(comment).data
+                    'comment': CommentSerializer(comment).data,
+                    # 'username':CommentSerializer(comment).data.user.username,
                 }, status = status.HTTP_201_CREATED)
                 return response
             return Response({

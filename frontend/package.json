@@ -10,10 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@flaticon/flaticon-uicons": "github:flaticon/flaticon-uicons",
+    "@shadcn/ui": "^0.0.4",
     "axios": "^1.8.4",
+    "moment": "^2.30.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.4.0",
+    "react-spinners": "^0.15.0",
     "react-toastify": "^11.0.5"
   },
   "devDependencies": {
