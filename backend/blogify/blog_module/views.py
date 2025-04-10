@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Blog,Comment
 from .serializers import BlogSerializer,CommentSerializer,ReplySerializer
+from .tasks import send_comment_notification_email
 
 
 class BlogListView(APIView):
@@ -146,6 +147,12 @@ class CommentCreateView(APIView):
             serializer = CommentSerializer(data = request.data)
             if serializer.is_valid():
                 comment = serializer.save(blog=blog, user = request.user)
+
+                send_comment_notification_email.delay(
+                    blog_id=blog.id,
+                    commenter_username=request.user.username,
+                    comment_content = comment.content)
+                
                 response = Response({
                     'success': True,
                     'message': 'Comment added successfully.',
