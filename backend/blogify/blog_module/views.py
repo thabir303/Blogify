@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Blog,Comment
-from .serializers import BlogSerializer,CommentSerializer
+from .serializers import BlogSerializer,CommentSerializer,ReplySerializer
 
 
 class BlogListView(APIView):
@@ -61,7 +61,7 @@ class BlogDetailView(APIView):
                 return response
             
             serializer = BlogSerializer(blog)
-            comments = Comment.objects.filter(blog=blog).select_related('user')
+            comments = Comment.objects.filter(blog=blog, parent = None).select_related('user')
             comment_data = CommentSerializer(comments, many = True).data
             response = Response({
                 'success': True,
@@ -163,3 +163,29 @@ class CommentCreateView(APIView):
                 'success': False,
                 'message': 'Blog not found'
             }, status=status.HTTP_404_NOT_FOUND)
+        
+class CommentReplyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, comment_id):
+        try:
+            parent_comment = Comment.objects.get(id=comment_id)
+
+            serializer = ReplySerializer(data=request.data)
+            if serializer.is_valid():
+                reply = serializer.save( user =request.user,
+                                        blog=parent_comment.blog,
+                                        parent = parent_comment
+                                        )
+                response = Response({
+                    'success':True,
+                    'message':'Reply added successfully.',
+                    'reply':ReplySerializer(reply).data
+                }, status=status.HTTP_201_CREATED)
+                return response
+        except Comment.DoesNotExist:
+            return Response({
+                'success':False,
+                'message':'Comment not found',
+            }, status = status.HTTP_404_NOT_FOUND)
+            

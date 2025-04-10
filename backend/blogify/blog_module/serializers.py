@@ -16,12 +16,24 @@ class BlogSerializer(serializers.ModelSerializer):
     #     validated_data['author'] = self.context['request'].user
     #     return super().create(validated_data)
     
-
-class CommentSerializer(serializers.ModelSerializer):
+        
+class ReplySerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+
     class Meta:
         model = Comment
-        fields = ['id','user','username','blog','content','created_at']
+        fields = ['id','user','username','content','created_at']
+        extra_kwargs = {
+            'user' : { 'required' : False},
+            # 'blog' : { 'required' : False},
+        }
+class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    replies = ReplySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id','user','username','blog','content','created_at','replies','parent']
 
         extra_kwargs = {
             'user' : { 'required' : False},
@@ -31,4 +43,3 @@ class CommentSerializer(serializers.ModelSerializer):
         # def create(self,validated_data):
         #     validated_data['user'] = self.context['request'].user
         #     return super().create(validated_data)
-        
