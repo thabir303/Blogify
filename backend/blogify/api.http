@@ -101,7 +101,7 @@ Content-Type: application/json
 }
 
 ### blog details 
-GET http://localhost:8000/api/blogs/18/
+GET http://localhost:8000/api/blogs/2/
 Content-Type: application/json
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTM5Nzk5LCJpYXQiOjE3NDQxMzk0OTksImp0aSI6IjdmMjIxMjYwODhmNzRkYzY5N2MwODVjM2M1MDZhOTIwIiwidXNlcl9pZCI6NTl9.l_sMQASP4xCWqeFw-PAbPPoXj3loUCFZ47ViKQJxA7w
 
