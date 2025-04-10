@@ -22,11 +22,6 @@ const BlogEdit = () => {
   });
 
   useEffect(() => {
-    if (!userData) {
-      toast.info('You must be logged in to edit a blog');
-      navigate('/login');
-      return;
-    }
 
     const fetchBlog = async () => {
       try {
@@ -41,12 +36,6 @@ const BlogEdit = () => {
         );
         
         const blogData = response.data.blog;
-        
-        if (blogData.author !== userData.username) {
-          toast.error('You can only edit your own blogs');
-          navigate('/blogs');
-          return;
-        }
         
         setIsAuthor(true);
         setFormData({
@@ -64,7 +53,7 @@ const BlogEdit = () => {
     };
 
     fetchBlog();
-  }, [backendUrl, blog_id, navigate, userData]);
+  }, [backendUrl, userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,7 +102,6 @@ const BlogEdit = () => {
           }
         }
       );
-      
       toast.success('Blog updated successfully');
       navigate(`/blogs`);
     } catch (error) {
@@ -123,22 +111,18 @@ const BlogEdit = () => {
       } else {
         toast.error(error.response?.data?.errors || 'Failed to update blog');
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   const togglePreview = () => {
     setPreview(!preview);
   };
-
-  if (!isAuthor) {
-    return null;
-  }
   
   const handleLogout = () => {
-    Logout();
     navigate('/');
+    setTimeout(() => { 
+        Logout();
+    },10);
   };
 
   return (
@@ -190,8 +174,7 @@ const BlogEdit = () => {
               <>
                 <FiFileText className="text-indigo-600" />
                 <span className="font-medium">Edit</span>
-              </>
-            ) : (
+              </> ) : (
               <>
                 <FiEye className="text-indigo-600" />
                 <span className="font-medium">Preview</span>

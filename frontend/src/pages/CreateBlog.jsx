@@ -18,8 +18,10 @@ const BlogCreate = () => {
     status: 'draft'
   });
   const handleLogout = () => {
-    Logout();
     navigate('/');
+    setTimeout(() => {
+        Logout();
+      }, 10);
   };
 
   useEffect(() => {
@@ -77,8 +79,6 @@ const BlogCreate = () => {
     } catch (error) {
       console.error('Error creating blog:', error);
       toast.error(error.response?.data?.errors || 'Failed to create blog');
-    } finally {
-      setLoading(false);
     }
   };
 
