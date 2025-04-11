@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import moment from 'moment';
 import { FiArrowLeft, FiMessageSquare, FiSend, FiCornerDownRight } from 'react-icons/fi';
 import { assets } from '../assets/assets';
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 const BlogDetails = () => {
   const { blog_id } = useParams();
@@ -29,13 +30,13 @@ const BlogDetails = () => {
         let response;
         if (userData) {
           const accessToken = localStorage.getItem('access_token');
-          response = await axios.get(`${backendUrl}/blogs/${blog_id}/`, {
+          response = await apiClient.get(`${backendUrl}/blogs/${blog_id}/`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           });
         } else {
-          response = await axios.get(`${backendUrl}/blogs/${blog_id}/`);
+          response = await apiClient.get(`${backendUrl}/blogs/${blog_id}/`);
         }
         
         if (response.data.success) {
@@ -56,7 +57,8 @@ const BlogDetails = () => {
         }
       } catch (error) {
         console.error('Error fetching blog details:', error);
-        setError('Failed to load blog. It might be deleted or you may not have permission to view it.');
+        handleApiError(error, navigate)
+        // setError('Failed to load blog. It might be deleted or you may not have permission to view it.');
       }
     };
 
@@ -87,7 +89,7 @@ const BlogDetails = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${backendUrl}/blogs/${blog_id}/comments/`,
         { content: commentText },
         {
@@ -107,10 +109,9 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-      toast.error('Failed to post comment');
-    } finally {
-      setSubmitting(false);
-    }
+    handleApiError(error, navigate)
+    //   toast.error('Failed to post comment');
+    } 
   };
 
   const handleReplySubmit = async (e) => {
@@ -135,7 +136,7 @@ const BlogDetails = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${backendUrl}/comments/${replyingTo}/reply/`,
         { content: replyText },
         {
@@ -164,9 +165,8 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-      toast.error('Failed to post reply');
-    } finally {
-      setSubmitting(false);
+        handleApiError(error, navigate)
+    //   toast.error('Failed to post reply');
     }
   };
 

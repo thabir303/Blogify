@@ -45,7 +45,7 @@ def notify_users_of_new_blog():
    
     print("Starting notify_users_of_new_blog task")
 
-    one_hour_ago = timezone.now() - timedelta(minutes=1)
+    one_hour_ago = timezone.now() - timedelta(Hours=12)
     new_blogs = Blog.objects.filter(created_at__gte=one_hour_ago, status=Blog.PUBLISHED)
     
     print(f"Found {new_blogs.count()} new blogs published in the last minute")

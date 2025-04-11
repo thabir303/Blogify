@@ -5,6 +5,7 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners'; 
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 function Login() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function Login() {
 
       axios.defaults.withCredentials = true;
 
-      const { data } = await axios.post(backendUrl + '/auth/login/', { email, password });
+      const { data } = await apiClient.post(backendUrl + '/auth/login/', { email, password });
 
       setLoading(false); 
 
@@ -52,7 +53,8 @@ function Login() {
       }
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
+      handleApiError(error, navigate)
+      // toast.error(error.message);
     }
   };
 

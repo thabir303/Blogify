@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import apiClient, { handleApiError } from "../utils/apiClient";
 
 export const AppContext = createContext();
 
@@ -33,7 +34,7 @@ export const AppContextProvider = (props) =>{
         }
 
         try {
-            const response = await axios.get(backendUrl + '/auth/token/verify/',{
+            const response = await apiClient.get(backendUrl + '/auth/token/verify/',{
                 headers: {
                     Authorization:`Bearer ${accessToken}`,
                 },
@@ -49,10 +50,11 @@ export const AppContextProvider = (props) =>{
         SetIsLoggedin(true);
         SetUserData(userData);
         } catch (error) {
+            handleApiError(error, navigate)
             console.error("Error:", error.response?.data || error.message);
             if (error.response && error.response.status === 401) {
                 try {
-                  const refreshResponse = await axios.post(backendUrl + '/auth/token/refresh/', {
+                  const refreshResponse = await apiClient.post(backendUrl + '/auth/token/refresh/', {
                     refresh: refreshToken,
                   });
         
@@ -66,6 +68,7 @@ export const AppContextProvider = (props) =>{
                   localStorage.removeItem('user_data');
                   localStorage.removeItem('access_token');
                   localStorage.removeItem('refresh_token');
+                  handleApiError(error, navigate)
                 }
               }
             }

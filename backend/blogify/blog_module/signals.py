@@ -9,8 +9,8 @@ def create_periodic_tasks(sender, **kwargs):
 
     if sender.name == 'blog_module':
         schedule, created = IntervalSchedule.objects.get_or_create(
-            every=1,
-            period=IntervalSchedule.MINUTES,
+            every=12,
+            period=IntervalSchedule.HOURS,
         )
         
         PeriodicTask.objects.get_or_create(

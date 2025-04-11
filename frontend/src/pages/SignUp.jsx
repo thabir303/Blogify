@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { AppContext } from '../context/AppContext';
 import { ClipLoader } from 'react-spinners'; 
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 function SignUp() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ function SignUp() {
 
       axios.defaults.withCredentials = true;
 
-      const { data } = await axios.post(backendUrl + '/auth/register/', {
+      const { data } = await apiClient.post(backendUrl + '/auth/register/', {
         username,
         email,
         password,
@@ -49,7 +50,7 @@ function SignUp() {
       }
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
+      handleApiError(error,navigate)
     }
   };
 

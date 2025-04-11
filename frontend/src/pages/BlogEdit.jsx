@@ -5,6 +5,7 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { FiArrowLeft, FiSave, FiEye, FiFileText } from 'react-icons/fi';
 import { assets } from '../assets/assets';
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 const BlogEdit = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const BlogEdit = () => {
     const fetchBlog = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
-        const response = await axios.get(
+        const response = await apiClient.get(
           `${backendUrl}/blogs/${blog_id}/`, 
           {
             headers: {
@@ -92,7 +93,7 @@ const BlogEdit = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await axios.put(
+      const response = await apiClient.put(
         `${backendUrl}/blogs/${blog_id}/edit/`, 
         formData,
         {
@@ -106,6 +107,7 @@ const BlogEdit = () => {
       navigate(`/blogs`);
     } catch (error) {
       console.error('Error updating blog:', error);
+      handleApiError(error, navigate)
       if (error.response?.data?.message === 'Published posts cannot be changed to draft mood.') {
         toast.error('Published blogs cannot be changed to draft status');
       } else {

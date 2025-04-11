@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { ClipLoader } from 'react-spinners'; 
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 const EmailVerify = () => {
   axios.defaults.withCredentials = true;
@@ -53,7 +54,8 @@ const EmailVerify = () => {
       const otpArray = inputRefs.current.map((e) => e.value);
       const pin = otpArray.join('');
 
-      const { data } = await axios.post(backendUrl + '/auth/activate/', { email, pin });
+      const { data } = await apiClient.post(backendUrl + '/auth/activate/', 
+        { email, pin });
 
       setLoading(false); 
 
@@ -65,7 +67,8 @@ const EmailVerify = () => {
       }
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
+      // toast.error(error.message);
+      handleApiError(error, navigate)
     }
   };
 

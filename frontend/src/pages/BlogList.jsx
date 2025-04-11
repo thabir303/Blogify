@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import moment from 'moment';
 import { FiEdit, FiEye, FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { assets } from '../assets/assets';
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 const BlogList = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const BlogList = () => {
         let response;
         if (userData) {
           const accessToken = localStorage.getItem('access_token');
-          response = await axios.get(backendUrl + '/blogs/', {
+          response = await apiClient.get(backendUrl + '/blogs/', {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
@@ -34,13 +35,14 @@ const BlogList = () => {
           setBlogs(response.data.data);
           setFilteredBlogs(response.data.data);
         } else {
-          response = await axios.get(backendUrl + '/blogs/');
+          response = await apiClient.get(backendUrl + '/blogs/');
           const publishedBlogs = response.data.data.filter(blog => blog.status === 'published');
           setBlogs(publishedBlogs);
           setFilteredBlogs(publishedBlogs);
         }
       } catch (error) {
         toast.error('Error fetching blogs');
+        handleApiError(error, navigate)
       }
     };
     fetchBlogs();
@@ -68,7 +70,7 @@ const BlogList = () => {
   const handleDelete = async () => {
     try {
       const accessToken = localStorage.getItem('access_token');
-      await axios.delete(`${backendUrl}/blogs/${blogToDelete}/delete/`, {
+      await apiClient.delete(`${backendUrl}/blogs/${blogToDelete}/delete/`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -80,8 +82,10 @@ const BlogList = () => {
       setShowDeleteModal(false);
       setBlogToDelete(null);
     } catch (error) {
-      toast.error('Error deleting blog');
+      
+      // toast.error('Error deleting blog');
       setShowDeleteModal(false);
+      handleApiError(error, navigate)
     }
   };
 

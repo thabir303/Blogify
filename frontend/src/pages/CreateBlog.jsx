@@ -5,6 +5,7 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { FiArrowLeft, FiSave, FiEye, FiFileText } from 'react-icons/fi';
 import { assets } from '../assets/assets';
+import apiClient, { handleApiError } from '../utils/apiClient';
 
 const BlogCreate = () => {
   const navigate = useNavigate();
@@ -12,8 +13,7 @@ const BlogCreate = () => {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(false);
   
-  const [formData, setFormData] = useState({
-    title: '',
+  const [formData, setFormData] = useState({ title: '',
     content: '',
     status: 'draft'
   });
@@ -63,7 +63,7 @@ const BlogCreate = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${backendUrl}/blogs/create/`, 
         formData,
         {
@@ -78,7 +78,8 @@ const BlogCreate = () => {
       navigate('/blogs');
     } catch (error) {
       console.error('Error creating blog:', error);
-      toast.error(error.response?.data?.errors || 'Failed to create blog');
+    //   toast.error(error.response?.data?.errors || 'Failed to create blog');
+    handleApiError(error, navigate);
     }
   };
 
