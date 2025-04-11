@@ -7,27 +7,60 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Blog,Comment
 from .serializers import BlogSerializer,CommentSerializer,ReplySerializer
 from .tasks import send_comment_notification_email
+from rest_framework.pagination import PageNumberPagination
 
+class BlogPagination(PageNumberPagination):
+    page_size = 9
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class BlogListView(APIView):
     permission_classes = [AllowAny]
+    pagination_class = BlogPagination
 
     def get(self, request):
-        published_blogs = Blog.objects.filter(status=Blog.PUBLISHED).select_related('author')
+        paginator = self.pagination_class()
         
         if request.user.is_authenticated:
+            published_blogs = Blog.objects.filter(status=Blog.PUBLISHED).select_related('author')
             draft_blogs = Blog.objects.filter(author=request.user, status=Blog.DRAFT).select_related('author')
-            combined_queryset = published_blogs.union(draft_blogs)
-            blogs = combined_queryset.order_by('-updated_at')
+            
+            filter_status = request.query_params.get('status')
+            if filter_status:
+                if filter_status == 'published':
+                    blogs = published_blogs.order_by('-updated_at')
+                elif filter_status == 'draft':
+                    blogs = draft_blogs.order_by('-updated_at')
+                elif filter_status == 'myblogs':
+                    blogs = Blog.objects.filter(author=request.user).select_related('author').order_by('-updated_at')
+                elif filter_status == 'all':
+                    combined_queryset = published_blogs.union(draft_blogs)
+                    blogs = combined_queryset.order_by('-updated_at')
+            else:
+                combined_queryset = published_blogs.union(draft_blogs)
+                blogs = combined_queryset.order_by('-updated_at')
         else:
-            blogs = published_blogs.order_by('-updated_at')
+            blogs = Blog.objects.filter(status=Blog.PUBLISHED).select_related('author').order_by('-updated_at')
+        
+        page = paginator.paginate_queryset(blogs, request)
+        
+        if page is not None:
+            serializer = BlogSerializer(page, many=True)
+            result = paginator.get_paginated_response(serializer.data)
+            return Response({
+                'success': True,
+                'data': serializer.data,
+                'count': result.data['count'],
+                'next': result.data['next'],
+                'previous': result.data['previous'],
+                'total_pages': (result.data['count'] + paginator.page_size - 1) // paginator.page_size
+            }, status=status.HTTP_200_OK)
         
         serializer = BlogSerializer(blogs, many=True)
-        response = Response({
+        return Response({
             'success': True,
-            'data': serializer.data,
+            'data': serializer.data
         }, status=status.HTTP_200_OK)
-        return response
 
 class BlogCreateView(APIView):
     permission_classes = [IsAuthenticated]

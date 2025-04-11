@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import moment from 'moment';
@@ -10,59 +10,72 @@ import apiClient, { handleApiError } from '../utils/apiClient';
 
 const BlogList = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [blogs, setBlogs] = useState([]);
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [allfilter, setAllFilter] = useState('all');
   const { backendUrl, userData, Logout } = useContext(AppContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState(null);
   
   const [currentPage, setCurrentPage] = useState(1);
-  const [blogsPerPage] = useState(9);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalBlogs, setTotalBlogs] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        let response;
-        if (userData) {
-          const accessToken = localStorage.getItem('access_token');
-          response = await axios.get(backendUrl + '/blogs/', {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
-          setBlogs(response.data.data);
-          setFilteredBlogs(response.data.data);
-        } else {
-          response = await axios.get(backendUrl + '/blogs/');
-          const publishedBlogs = response.data.data.filter(blog => blog.status === 'published');
-          setBlogs(publishedBlogs);
-          setFilteredBlogs(publishedBlogs);
-        }
-      } catch (error) {
-        toast.error('Error fetching blogs');
-        // handleApiError(error, navigate)
+
+    const queryParams = new URLSearchParams(location.search);
+    const filterParam = queryParams.get('filter') || 'all';
+    const pageParam = parseInt(queryParams.get('page')) || 1;
+    
+    setAllFilter(filterParam);
+    setCurrentPage(pageParam);
+    
+    fetchBlogs(pageParam, filterParam);
+  }, [location.search, backendUrl, userData]);
+
+  const fetchBlogs = async (page = 1, filter = 'all') => {
+    setLoading(true);
+    try {
+      let url = `${backendUrl}/blogs/?page=${page}`;
+      
+      if (filter !== 'all' && filter !== 'myblogs') {
+        url += `&status=${filter}`;
+      } else if (filter === 'myblogs') {
+        url += `&status=myblogs`;
       }
-    };
-    fetchBlogs();
-  }, [backendUrl, userData]);
-
-  useEffect(() => {
-    setTotalPages(Math.ceil(filteredBlogs.length / blogsPerPage));
-    setCurrentPage(1);
-  }, [filteredBlogs, blogsPerPage]);
+      
+      let response;
+      if (userData) {
+        const accessToken = localStorage.getItem('access_token');
+        response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+      } else {
+        response = await axios.get(url);
+      }
+      
+      setBlogs(response.data.data);
+      setTotalBlogs(response.data.count);
+      setTotalPages(response.data.total_pages);
+    } catch (error) {
+      toast.error('Error fetching blogs');
+      // handleApiError(error, navigate)
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFilter = (option) => {
     setAllFilter(option);
-    if (option === 'all') {
-      setFilteredBlogs(userData ? blogs : blogs.filter(blog => blog.status === 'published'));
-    } else if (option === 'myblogs') {
-      // Filter to show only the logged-in user's blogs
-      setFilteredBlogs(blogs.filter(blog => blog.author === userData.username));
-    } else {
-      setFilteredBlogs(blogs.filter(blog => blog.status === option));
-    }
+    setCurrentPage(1);
+    
+    const searchParams = new URLSearchParams();
+    searchParams.set('filter', option);
+    searchParams.set('page', '1');
+    navigate(`/blogs?${searchParams.toString()}`);
   };
 
   const confirmDelete = (blogId) => {
@@ -80,12 +93,12 @@ const BlogList = () => {
       });
       
       toast.success('Blog deleted successfully');
-      setBlogs(blogs.filter(blog => blog.id !== blogToDelete));
-      setFilteredBlogs(filteredBlogs.filter(blog => blog.id !== blogToDelete));
+      
+      fetchBlogs(currentPage, allfilter);
+      
       setShowDeleteModal(false);
       setBlogToDelete(null);
     } catch (error) {
-      
       toast.error('Error deleting blog');
       setShowDeleteModal(false);
       // handleApiError(error, navigate)
@@ -116,21 +129,21 @@ const BlogList = () => {
     return userData && blog.author === userData.username;
   };
 
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const changePage = (pageNumber) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', pageNumber.toString());
+    navigate(`/blogs?${searchParams.toString()}`);
+  };
   
   const nextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      changePage(currentPage + 1);
     }
   };
   
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      changePage(currentPage - 1);
     }
   };
   
@@ -185,7 +198,7 @@ const BlogList = () => {
         )}
       </div>
       
-      <div className="py-2 px-3 sm:px-6 ">
+      <div className="py-2 px-3 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-2">
             <h1 className="text-3xl font-bold text-gray-800">Blogs</h1>
@@ -237,111 +250,119 @@ const BlogList = () => {
             </div>
           )}
         
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentBlogs.map((blog) => (
-              <div 
-                key={blog.id} 
-                className="bg-white rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl"
-              >
-                <div className="p-4 relative">
+          {loading ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {blogs.map((blog) => (
                   <div 
-                    className="absolute top-2 right-2 bg-gray-100 rounded-full px-2 py-0.5 text-xs font-medium text-gray-700"
+                    key={blog.id} 
+                    className="bg-white rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl"
                   >
-                    {isAuthor(blog) ? 'You' : blog.author}
-                  </div>
-                  
-                  <div 
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium mb-3 
-                      ${blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}
-                  >
-                    {blog.status === 'published' ? (
-                      <img src="/world.png" alt="Published" className="w-3 h-3" />
-                    ) : (
-                      <img src="/drafts (1).png" alt="Drafted" className="w-3 h-3" />
-                    )}
-                    {blog.status === 'published' ? 'Published' : 'Draft'}
-                  </div>
-                  
-                  <h3 className="text-lg font-bold mb-2 text-gray-800 mt-1">{blog.title}</h3>
-                  <p className="text-gray-600 mb-3 line-clamp-3 text-sm">{blog.content.slice(0, 30)}...</p>
-                  
-                  <div className="text-xs text-gray-500 mt-1">
-                    <p>Created {moment(blog.created_at).fromNow()}</p>
-                    <p>Updated {moment(blog.updated_at).fromNow()}</p>
-                  </div>
-                </div>
-                
-                <div className="bg-gray-50 p-3 flex justify-between items-center border-t border-gray-300">
-                  <Link 
-                    to={`/blogs/${blog.id}`} 
-                    className="flex items-center text-indigo-600 hover:text-indigo-800 font-medium text-sm"
-                  >
-                    <FiEye className="mr-1" /> Read more
-                  </Link>
-                  
-                  {isAuthor(blog) && (
-                    <div className="flex items-center gap-2">
-                      <Link 
-                        to={`/blogs/${blog.id}/edit`} 
-                        className="text-gray-600 hover:text-indigo-600 transition-colors"
+                    <div className="p-4 relative">
+                      <div 
+                        className="absolute top-2 right-2 bg-gray-100 rounded-full px-2 py-0.5 text-xs font-medium text-gray-700"
                       >
-                        <FiEdit size={16} />
-                      </Link>
-
-                      <button 
-                        onClick={() => confirmDelete(blog.id)}
-                        className="text-gray-600 hover:text-red-600 transition-colors"
+                        {isAuthor(blog) ? 'You' : blog.author}
+                      </div>
+                      
+                      <div 
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium mb-3 
+                          ${blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}
                       >
-                        <FiTrash2 size={16} />
-                      </button>
+                        {blog.status === 'published' ? (
+                          <img src="/world.png" alt="Published" className="w-3 h-3" />
+                        ) : (
+                          <img src="/drafts (1).png" alt="Drafted" className="w-3 h-3" />
+                        )}
+                        {blog.status === 'published' ? 'Published' : 'Draft'}
+                      </div>
+                      
+                      <h3 className="text-lg font-bold mb-2 text-gray-800 mt-1">{blog.title}</h3>
+                      <p className="text-gray-600 mb-3 line-clamp-3 text-sm">{blog.content.slice(0, 30)}...</p>
+                      
+                      <div className="text-xs text-gray-500 mt-1">
+                        <p>Created {moment(blog.created_at).fromNow()}</p>
+                        <p>Updated {moment(blog.updated_at).fromNow()}</p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {currentBlogs.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No blogs found.</p>
-            </div>
-          )}
+                    
+                    <div className="bg-gray-50 p-3 flex justify-between items-center border-t border-gray-300">
+                      <Link 
+                        to={`/blogs/${blog.id}`} 
+                        className="flex items-center text-indigo-600 hover:text-indigo-800 font-medium text-sm"
+                      >
+                        <FiEye className="mr-1" /> Read more
+                      </Link>
+                      
+                      {isAuthor(blog) && (
+                        <div className="flex items-center gap-2">
+                          <Link 
+                            to={`/blogs/${blog.id}/edit`} 
+                            className="text-gray-600 hover:text-indigo-600 transition-colors"
+                          >
+                            <FiEdit size={16} />
+                          </Link>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-4">
-              <nav className="inline-flex rounded-md shadow-sm">
-                <button
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                  className={`relative inline-flex items-center px-2 py-1.5 rounded-l-md border border-gray-300 bg-white text-sm font-medium
-                    ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'}`}
-                >
-                  <FiChevronLeft className="h-4 w-4" />
-                </button>
-                
-                {pageNumbers.map(number => (
-                  <button
-                    key={number}
-                    onClick={() => paginate(number)}
-                    className={`relative inline-flex items-center px-3 py-1.5 border border-gray-300 bg-white text-sm font-medium
-                      ${currentPage === number 
-                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
-                        : 'text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    {number}
-                  </button>
+                          <button 
+                            onClick={() => confirmDelete(blog.id)}
+                            className="text-gray-600 hover:text-red-600 transition-colors"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
-                
-                <button
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                  className={`relative inline-flex items-center px-2 py-1.5 rounded-r-md border border-gray-300 bg-white text-sm font-medium
-                    ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'}`}
-                >
-                  <FiChevronRight className="h-4 w-4" />
-                </button>
-              </nav>
-            </div>
+              </div>
+              
+              {blogs.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No blogs found.</p>
+                </div>
+              )}
+
+              {totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                  <nav className="inline-flex rounded-md shadow-sm">
+                    <button
+                      onClick={prevPage}
+                      disabled={currentPage === 1}
+                      className={`relative inline-flex items-center px-2 py-1.5 rounded-l-md border border-gray-300 bg-white text-sm font-medium
+                        ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      <FiChevronLeft className="h-4 w-4" />
+                    </button>
+                    
+                    {pageNumbers.map(number => (
+                      <button
+                        key={number}
+                        onClick={() => changePage(number)}
+                        className={`relative inline-flex items-center px-3 py-1.5 border border-gray-300 bg-white text-sm font-medium
+                          ${currentPage === number 
+                            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
+                            : 'text-gray-700 hover:bg-gray-50'}`}
+                      >
+                        {number}
+                      </button>
+                    ))}
+                    
+                    <button
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages}
+                      className={`relative inline-flex items-center px-2 py-1.5 rounded-r-md border border-gray-300 bg-white text-sm font-medium
+                        ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      <FiChevronRight className="h-4 w-4" />
+                    </button>
+                  </nav>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
