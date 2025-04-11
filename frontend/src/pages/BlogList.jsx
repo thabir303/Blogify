@@ -93,6 +93,8 @@ const BlogList = () => {
     if (userData) {
       navigate('/create-blog');
     } else {
+      localStorage.setItem('returnUrl','/create-blog');
+
       toast.info('You must be logged in to post a blog', {
         autoClose: 3000,
       });

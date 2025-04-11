@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import moment from 'moment';
@@ -67,6 +67,18 @@ const BlogDetails = () => {
     
    }, [backendUrl, blog_id, userData]);
 
+  const redirectToLoginWithReturnUrl = () => {
+    localStorage.setItem('returnUrl', `/blogs/${blog_id}`);
+    
+    toast.info('You must be logged in to continue', {
+      autoClose: 2000,
+    });
+    
+    setTimeout(() => {
+      navigate('/login');
+    }, 2000);
+  };
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     
@@ -76,12 +88,7 @@ const BlogDetails = () => {
     }
     
     if (!userData) {
-      toast.info('You must be logged in to comment', {
-        autoClose: 2000,
-      });
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      redirectToLoginWithReturnUrl();
       return;
     }
     
@@ -123,12 +130,7 @@ const BlogDetails = () => {
     }
     
     if (!userData) {
-      toast.info('You must be logged in to reply', {
-        autoClose: 2000,
-      });
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      redirectToLoginWithReturnUrl();
       return;
     }
     
@@ -172,12 +174,7 @@ const BlogDetails = () => {
 
   const startReply = (commentId) => {
     if (!userData) {
-      toast.info('You must be logged in to reply', {
-        autoClose: 2000,
-      });
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      redirectToLoginWithReturnUrl();
       return;
     }
     

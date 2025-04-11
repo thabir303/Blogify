@@ -13,10 +13,12 @@ const BlogCreate = () => {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(false);
   
-  const [formData, setFormData] = useState({ title: '',
+  const [formData, setFormData] = useState({ 
+    title: '',
     content: '',
     status: 'draft'
   });
+
   const handleLogout = () => {
     navigate('/');
     setTimeout(() => {
@@ -24,12 +26,23 @@ const BlogCreate = () => {
       }, 10);
   };
 
+  const redirectToLoginWithReturnUrl = () => {
+    localStorage.setItem('returnUrl', '/blogs/create');
+    
+    toast.info('You must be logged in to create a blog', {
+      autoClose: 2000,
+    });
+    
+    setTimeout(() => {
+      navigate('/login');
+    }, 2000);
+  };
+
   useEffect(() => {
     if (!userData) {
-      toast.info('You must be logged in to create a blog');
-      navigate('/login');
+      redirectToLoginWithReturnUrl();
     }
-  }, [userData, navigate]);
+  }, [userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,6 +62,10 @@ const BlogCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    if (!userData) {
+        redirectToLoginWithReturnUrl();
+        return;
+    }
     if (!formData.title.trim()) {
       toast.error('Title is required');
       return;
@@ -80,12 +97,21 @@ const BlogCreate = () => {
       console.error('Error creating blog:', error);
       toast.error(error.response?.data?.errors || 'Failed to create blog');
     // handleApiError(error, navigate);
+     if (error.response && error.response.status === 401) {
+        redirectToLoginWithReturnUrl();
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const togglePreview = () => {
     setPreview(!preview);
   };
+
+  if(!userData){
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

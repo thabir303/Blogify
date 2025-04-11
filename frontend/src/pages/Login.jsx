@@ -47,7 +47,16 @@ function Login() {
         toast.success(`Login successful! Welcome ${userData.username}`);
         SetUserData(userData);
         SetIsLoggedin(true);
-        navigate('/');
+
+        const returnUrl = localStorage.getItem('returnUrl');
+        if(returnUrl){
+          localStorage.removeItem('returnUrl');
+          navigate(returnUrl);
+        }
+        else{
+          navigate('/')
+        }
+        // navigate('/');
       } else {
         toast.error(data.message);
       }
