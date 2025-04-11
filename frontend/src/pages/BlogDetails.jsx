@@ -7,6 +7,8 @@ import moment from 'moment';
 import { FiArrowLeft, FiMessageSquare, FiSend, FiCornerDownRight, FiEdit } from 'react-icons/fi';
 import { assets } from '../assets/assets';
 import apiClient, { handleApiError } from '../utils/apiClient';
+import UserAvatar from '../components/UserAvatar';
+import BlogifyLogo from '../components/BlogifyLogo';
 
 const BlogDetails = () => {
   const { blog_id } = useParams();
@@ -266,30 +268,12 @@ const BlogDetails = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
       <div className='w-full flex justify-between items-center p-2 sm:py-1 sm:px-4 md:px-6 lg:px-16
       z-50 transition-all duration-300'>
-        <Link to="/" className="transition-transform duration-300 hover:scale-105">
-          <img src={assets.blogify} className='w-12 sm:w-14 md:w-16 lg:w-20' alt="Blogify Logo" />
-        </Link>
+                <BlogifyLogo/>
+
           
         {userData ? (
-          <div className='w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex justify-center items-center rounded-full
-          bg-black text-white relative group cursor-pointer
-          transition-all duration-300 hover:shadow-md hover:scale-105'>
-            <span className='text-center text-xs sm:text-sm font-medium'>{userData.username[0].toUpperCase()}</span>
-            <div className='absolute hidden group-hover:block top-0 right-0
-            z-10 text-black rounded pt-8 sm:pt-10 md:pt-12'>
-                <ul className='list-none m-0 p-0 bg-white shadow-lg rounded-lg border border-gray-100 overflow-hidden w-24 sm:w-28 md:w-32'>
-                    <li
-                        onClick={handleLogout}  
-                        className='py-2 px-3 sm:py-2.5 sm:px-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200 text-gray-700 flex items-center gap-2 text-xs sm:text-sm'
-                    >
-                        <span className="w-3 h-3 sm:w-4 sm:h-4 flex items-center justify-center">
-                            <i className="fi fi-rr-sign-out text-xs"></i>
-                        </span>
-                        <span>Logout</span>
-                    </li>
-                </ul>
-            </div>
-          </div> 
+            // <>Abir</>
+          <UserAvatar/>
         ) 
         : (
           <button onClick={() => navigate('/login')}

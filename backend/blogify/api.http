@@ -22,9 +22,15 @@ POST http://localhost:8000/api/auth/login/
 Content-Type: application/json
 
 {
-  "email": "bsse1321@yopmail.com",
-  "password": "bsse1321@yopmail.com"
+  "email": "bsse1321@iit.du.ac.bd",
+  "password": "bsse1321@iit.du.ac.bd"
 }
+
+
+### User Login
+GET http://localhost:8000/api/blogs/user/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0NDA2OTc5LCJpYXQiOjE3NDQ0MDMzNzksImp0aSI6IjFjMDVmNzMwYTFjNDRkZGNiZDgwMDZhZmU0YjMyMzFlIiwidXNlcl9pZCI6NTl9.QGwHDMdOf9hv38ZEIjvKJlvALFzvrXjPuNOZaXwC2ms
 
 ### Password reset
 POST http://localhost:8000/api/auth/password-reset/

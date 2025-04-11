@@ -7,6 +7,10 @@ import moment from 'moment';
 import { FiEdit, FiEye, FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { assets } from '../assets/assets';
 import apiClient, { handleApiError } from '../utils/apiClient';
+import UserAvatar from '../components/UserAvatar';
+import BlogifyLogo from '../components/BlogifyLogo';
+import LoginButton from '../components/LoginButton';
+import DeleteModal from '../components/DeleteModal';
 
 const BlogList = () => {
   const navigate = useNavigate();
@@ -23,7 +27,6 @@ const BlogList = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-
     const queryParams = new URLSearchParams(location.search);
     const filterParam = queryParams.get('filter') || 'all';
     const pageParam = parseInt(queryParams.get('page')) || 1;
@@ -105,6 +108,11 @@ const BlogList = () => {
     }
   };
 
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setBlogToDelete(null);
+  };
+
   const handleWriteClick = () => {
     if (userData) {
       navigate('/create-blog');
@@ -156,45 +164,12 @@ const BlogList = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
       <div className='w-full flex justify-between h-20 items-center p-2 sm:py-1 sm:px-6 md:px-6 lg:px-20
      z-50 transition-all duration-300'>
-        <Link to="/" className="transition-transform duration-300 hover:scale-105">
-          <img src={assets.blogify} className='w-14 sm:w-12 md:w-20' alt="Blogify Logo" />
-        </Link>
+        <BlogifyLogo/>
           
         {userData ? (
-          <div className='flex items-center gap-2 sm:gap-4'>
-            <div className='w-8 h-8 sm:w-9 sm:h-9 flex justify-center items-center rounded-full
-              bg-black text-white relative group cursor-pointer
-              transition-all duration-300 hover:shadow-md hover:scale-105'>
-              <span className='text-center font-medium'>{userData.username[0].toUpperCase()}</span>
-              <div className='absolute hidden group-hover:block top-0 right-0
-                z-10 text-black rounded pt-8 sm:pt-10'>
-                <ul className='list-none m-0 p-0 bg-white shadow-lg rounded-lg border border-gray-100 overflow-hidden w-24 sm:w-28'>
-                  <li
-                    onClick={handleLogout}
-                    className='py-2 px-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 text-gray-700 flex items-center gap-2'
-                  >
-                    <span className="w-4 h-4 flex items-center justify-center">
-                      <i className="fi fi-rr-sign-out text-xs"></i>
-                    </span>
-                    <span>Logout</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <UserAvatar/> 
         ) : (
-          <button onClick={() => navigate('/login')}
-            className='group flex items-center gap-1 border border-black bg-white
-              rounded-full px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-800
-              transition-all duration-300 ease-in-out w-20 sm:w-24 h-8 sm:h-10 justify-center
-              hover:shadow-md hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600'>
-            <span className="font-medium">Login</span>
-            <img
-              src={assets.arrow_icon}
-              alt=""
-              className='w-2.5 sm:w-3 h-2.5 sm:h-3 transition-transform duration-300 group-hover:translate-x-1'
-            />
-          </button>
+          <LoginButton/>
         )}
       </div>
       
@@ -367,45 +342,11 @@ const BlogList = () => {
         </div>
       </div>
 
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
-            <div className="fixed inset-0 transition-opacity">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            
-            <div className="inline-block w-full max-w-md p-5 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
-              <div className="text-center sm:mt-0 sm:text-left">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-3">
-                  Delete Blog
-                </h3>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">
-                    Are you sure you want to delete this blog? This action cannot be undone.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="mt-4 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteModal(false)}
-                  className="inline-flex justify-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="inline-flex justify-center px-3 py-1.5 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteModal isOpen={showDeleteModal}
+        onClose={handleCloseDeleteModal}  onDelete={handleDelete}
+        title="Delete Blog"
+        message="Are you sure you want to delete this blog? This action cannot be undone."
+      />
     </div>
   );
 };

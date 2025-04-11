@@ -15,6 +15,7 @@ import BlogEdit from './pages/BlogEdit'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
 import ErrorPage from './components/ErrorPage'
+import DashboardPage from './pages/DashboardPage'
 
 const App = () => {
   
@@ -39,6 +40,7 @@ const App = () => {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/create-blog" element={<CreateBlog />} /> 
+          <Route path="/dashboard" element={<DashboardPage />} /> 
           <Route path="/blogs/:blog_id/edit" element={<BlogEdit />} /> 
         </Route>
 

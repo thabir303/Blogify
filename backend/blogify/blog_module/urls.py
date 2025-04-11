@@ -1,6 +1,6 @@
 # backend/blogify/blog_module/urls.py
 from django.urls import path
-from .views import BlogListView, BlogCreateView, BlogDetailView, BlogEditView, BlogDeleteView, CommentCreateView,CommentReplyView
+from .views import BlogListView, BlogCreateView, BlogDetailView, BlogEditView, BlogDeleteView, CommentCreateView,CommentReplyView, UserBlogsView
 
 urlpatterns = [
     
@@ -11,5 +11,5 @@ urlpatterns = [
     path('blogs/<int:blog_id>/delete/', BlogDeleteView.as_view(), name='blog_delete'),
     path('blogs/<int:blog_id>/comments/', CommentCreateView.as_view(), name='comment_create'),
     path('comments/<int:comment_id>/reply/', CommentReplyView.as_view(), name='comment_reply'),
-
+    path('blogs/user/', UserBlogsView.as_view(), name='user-blogs'),
 ]

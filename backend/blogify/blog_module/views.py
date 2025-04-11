@@ -94,6 +94,10 @@ class BlogDetailView(APIView):
                                     }, status = status.HTTP_403_FORBIDDEN)
                 return response
             
+            if blog.status == Blog.PUBLISHED and blog.author != request.user:
+                blog.views += 1
+                blog.save(update_fields=['views'])
+
             serializer = BlogSerializer(blog)
             comments = Comment.objects.filter(blog=blog, parent = None).select_related('user')
             comment_data = CommentSerializer(comments, many = True).data
@@ -228,4 +232,16 @@ class CommentReplyView(APIView):
                 'success':False,
                 'message':'Comment not found',
             }, status = status.HTTP_404_NOT_FOUND)
-            
+
+
+class UserBlogsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_blogs = Blog.objects.filter(author=request.user).select_related('author').order_by('-updated_at')
+        serializer = BlogSerializer(user_blogs, many=True)
+        
+        return Response({
+            'success': True,
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
