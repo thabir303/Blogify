@@ -2,10 +2,9 @@ import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { AppContext } from '../context/AppContext';
 import { ClipLoader } from 'react-spinners'; 
-import apiClient, { handleApiError } from '../utils/apiClient';
+import apiClient from '../utils/apiClient';
 
 function SignUp() {
   const navigate = useNavigate();
@@ -22,35 +21,52 @@ function SignUp() {
       e.preventDefault();
       setLoading(true); 
 
-      axios.defaults.withCredentials = true;
-
-      const { data } = await axios.post(backendUrl + '/auth/register/', {
+      // Use the apiClient instead of direct axios
+      const response = await apiClient.post(`${backendUrl}/auth/register/`, {
         username,
         email,
         password,
       });
 
-      setLoading(false); 
-
-      if (data.success) {
+      setLoading(false);
+      
+      if (response.data.success) {
         toast.success(`Sign-Up successful! Check your mail to activate your account.`);
         
-        localStorage.setItem('access_token', data.access);
-        localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('access_token', response.data.access);
+        localStorage.setItem('refresh_token', response.data.refresh);
 
         const userData = {
-          username: data.username,
-          email: data.email,
+          username: response.data.username,
+          email: response.data.email,
         };
         localStorage.setItem('user_data', JSON.stringify(userData));
 
         navigate('/activate-email');
       } else {
-        toast.error(data.message);
+        toast.error(response.data.message || "Registration failed");
       }
     } catch (error) {
       setLoading(false);
-      // handleApiError(error,navigate)
+      
+      // Display error message from the backend if available
+      if (error.response && error.response.data) {
+        if (error.response.data.email) {
+          toast.error(`Email error: ${error.response.data.email[0]}`);
+        } else if (error.response.data.username) {
+          toast.error(`Username error: ${error.response.data.username[0]}`);
+        } else if (error.response.data.password) {
+          toast.error(`Password error: ${error.response.data.password[0]}`);
+        } else if (error.response.data.detail) {
+          toast.error(error.response.data.detail);
+        } else if (error.response.data.message) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("Registration failed. Please try again.");
+        }
+      } else {
+        toast.error("Network error. Please check your connection.");
+      }
     }
   };
 
@@ -63,17 +79,17 @@ function SignUp() {
         <form onSubmit={onSubmitHandler}>
           <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
             <img src={assets.person_icon} alt="" />
-            <input onChange={(e) => setUserName(e.target.value)} value={username} className="bg-transparent outline-none" type="text" placeholder="Full Name" required />
+            <input onChange={(e) => setUserName(e.target.value)} value={username} className="bg-transparent outline-none w-full" type="text" placeholder="Full Name" required />
           </div>
 
           <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
             <img src={assets.mail_icon} alt="" />
-            <input onChange={(e) => setEmail(e.target.value)} value={email} className="bg-transparent outline-none" type="email" placeholder="Email account" required />
+            <input onChange={(e) => setEmail(e.target.value)} value={email} className="bg-transparent outline-none w-full" type="email" placeholder="Email account" required />
           </div>
 
           <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
             <img src={assets.lock_icon} alt="" />
-            <input onChange={(e) => setPassword(e.target.value)} value={password} className="bg-transparent outline-none" type={showPassword ? 'text' : 'password'} placeholder="Password" required />
+            <input onChange={(e) => setPassword(e.target.value)} value={password} className="bg-transparent outline-none w-full" type={showPassword ? 'text' : 'password'} placeholder="Password" required />
             <img onClick={() => setShowPassword(!showPassword)} src={showPassword ? assets.eye_open_icon : assets.eye_open_icon} className="cursor-pointer w-6 h-6" alt="toggle" />
           </div>
 

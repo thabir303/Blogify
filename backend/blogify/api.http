@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
   "username": "Tanvir Hasan Abir",
-  "email": "bsse1321@iit.du.ac.bd",
-  "password": "verysecurePassWord"
+  "email": "bsse1321@yopmail.com",
+  "password": "bsse1321@yopmail.com"
 }
  
 ### Account Activation
@@ -13,8 +13,8 @@ POST http://localhost:8000/api/auth/activate/
 Content-Type: application/json
 
 {
-  "email": "bsse1321@iit.du.ac.bd",
-  "pin": "06368R"
+  "email": "bsse1321@yopmail.com",
+  "pin": "286AR5"
 }
 
 ### User Login
@@ -22,8 +22,8 @@ POST http://localhost:8000/api/auth/login/
 Content-Type: application/json
 
 {
-  "email": "bsse1321@iit.du.ac.bd",
-  "password": "bsse1321@iit."
+  "email": "bsse1321@yopmail.com",
+  "password": "bsse1321@yopmail.com"
 }
 
 ### Password reset
