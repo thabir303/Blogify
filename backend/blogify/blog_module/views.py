@@ -9,24 +9,25 @@ from .serializers import BlogSerializer,CommentSerializer,ReplySerializer
 from .tasks import send_comment_notification_email
 
 
+
 class BlogListView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self,request):
-        blogs = Blog.objects.filter(status=Blog.PUBLISHED).select_related('author')
+    def get(self, request):
+        published_blogs = Blog.objects.filter(status=Blog.PUBLISHED).select_related('author')
         
-        print(f'request user - {request}- {request.user}')
-
         if request.user.is_authenticated:
-            blogs = blogs | Blog.objects.filter(author=request.user, status=Blog.DRAFT)
+            draft_blogs = Blog.objects.filter(author=request.user, status=Blog.DRAFT).select_related('author')
+            combined_queryset = published_blogs.union(draft_blogs)
+            blogs = combined_queryset.order_by('-created_at')
+        else:
+            blogs = published_blogs.order_by('-created_at')
         
-        print(f'is_authenticated check : {request.user.is_authenticated}')
-
-        serializer = BlogSerializer(blogs, many = True)
+        serializer = BlogSerializer(blogs, many=True)
         response = Response({
             'success': True,
-            'data' : serializer.data,
-        }, status = status.HTTP_200_OK)
+            'data': serializer.data,
+        }, status=status.HTTP_200_OK)
         return response
 
 class BlogCreateView(APIView):

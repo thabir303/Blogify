@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { FiArrowLeft, FiMessageSquare, FiSend, FiCornerDownRight } from 'react-icons/fi';
+import { FiArrowLeft, FiMessageSquare, FiSend, FiCornerDownRight, FiEdit } from 'react-icons/fi';
 import { assets } from '../assets/assets';
 import apiClient, { handleApiError } from '../utils/apiClient';
 
@@ -59,6 +59,8 @@ const BlogDetails = () => {
         console.error('Error fetching blog details:', error);
         // handleApiError(error, navigate)
         setError('Failed to load blog. It might be deleted or you may not have permission to view it.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -81,6 +83,12 @@ const BlogDetails = () => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if blog is a draft
+    if (blog.status !== 'published') {
+      toast.error('Comments are not allowed on draft blogs');
+      return;
+    }
     
     if (!commentText.trim()) {
       toast.error('Comment cannot be empty');
@@ -116,13 +124,21 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-    // handleApiError(error, navigate)
+      // handleApiError(error, navigate)
       toast.error('Failed to post comment');
-    } 
+    } finally {
+      setSubmitting(false);  // Reset submitting state regardless of success/failure
+    }
   };
 
   const handleReplySubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if blog is a draft
+    if (blog.status !== 'published') {
+      toast.error('Comments are not allowed on draft blogs');
+      return;
+    }
     
     if (!replyText.trim()) {
       toast.error('Reply cannot be empty');
@@ -167,12 +183,20 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-        // handleApiError(error, navigate)
+      // handleApiError(error, navigate)
       toast.error('Failed to post reply');
+    } finally {
+      setSubmitting(false);  // Reset submitting state regardless of success/failure
     }
   };
 
   const startReply = (commentId) => {
+    // Check if blog is a draft
+    if (blog.status !== 'published') {
+      toast.error('Comments are not allowed on draft blogs');
+      return;
+    }
+    
     if (!userData) {
       redirectToLoginWithReturnUrl();
       return;
@@ -197,6 +221,10 @@ const BlogDetails = () => {
 
   const displayAuthor = (username) => {
     return isCurrentUser(username) ? 'You' : username;
+  };
+
+  const handleEditClick = () => {
+    navigate(`/blogs/${blog_id}/edit`);
   };
 
   if (error) {
@@ -237,6 +265,9 @@ const BlogDetails = () => {
     Logout();
     navigate('/');
   };
+
+  // Determine if the current user is the author of the blog
+  const isAuthor = isCurrentUser(blog.author);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
@@ -288,14 +319,26 @@ const BlogDetails = () => {
             <span>Back to blogs</span>
           </Link>
           
-          <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
-            ${blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
-            {blog.status === 'published' ? (
-              <img src="/world.png" alt="Published" className="w-3 h-3" /> ) 
-              : (
-              <img src="/drafts (1).png" alt="Drafted" className="w-3 h-3" />
+          <div className="flex items-center gap-3">
+            {blog.status === 'draft' && isAuthor && (
+              <button 
+                onClick={handleEditClick}
+                className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-full"
+              >
+                <FiEdit size={14} />
+                <span>Edit</span>
+              </button>
             )}
-            {blog.status === 'published' ? 'Published' : 'Draft'}
+            
+            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+              ${blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+              {blog.status === 'published' ? (
+                <img src="/world.png" alt="Published" className="w-3 h-3" /> ) 
+                : (
+                <img src="/drafts (1).png" alt="Drafted" className="w-3 h-3" />
+              )}
+              {blog.status === 'published' ? 'Published' : 'Draft'}
+            </div>
           </div>
         </div>
         
@@ -322,159 +365,182 @@ const BlogDetails = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-          <div className="p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <FiMessageSquare />
-              Comments ({totalCommentsCount})
-            </h2>
-            
-            <form onSubmit={handleCommentSubmit} className="mb-8">
-              <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center 
-                  ${userData ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                  {userData ? (
-                    userData.username[0].toUpperCase()
-                  ) : (
-                    <FiMessageSquare size={14} />
-                  )}
-                </div>
-                
-                <div className="flex-1">
-                  <textarea
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder={userData ? "Add a comment..." : "Login to comment"}
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    rows="3"
-                    disabled={!userData || submitting}
-                  />
+        {blog.status === 'published' ? (
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <FiMessageSquare />
+                Comments ({totalCommentsCount})
+              </h2>
+              
+              <form onSubmit={handleCommentSubmit} className="mb-8">
+                <div className="flex items-start gap-3">
+                  <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center 
+                    ${userData ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                    {userData ? (
+                      userData.username[0].toUpperCase()
+                    ) : (
+                      <FiMessageSquare size={14} />
+                    )}
+                  </div>
                   
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
+                  <div className="flex-1">
+                    <textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder={userData ? "Add a comment..." : "Login to comment"}
+                      className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      rows="3"
                       disabled={!userData || submitting}
-                      onClick={handleCommentSubmit}
-                      className={`flex items-center gap-1 py-2 px-4 rounded-lg font-medium
-                        ${userData 
-                          ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-                    >
-                      <FiSend size={16} />
-                      <span>{submitting ? 'Posting...' : 'Post Comment'}</span>
-                    </button>
+                    />
+                    
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        disabled={!userData || submitting}
+                        onClick={handleCommentSubmit}
+                        className={`flex items-center gap-1 py-2 px-4 rounded-lg font-medium
+                          ${userData 
+                            ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                      >
+                        <FiSend size={16} />
+                        <span>{submitting ? 'Posting...' : 'Post Comment'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </form>
-            
-            {comments.length > 0 ? (
-              <div className="space-y-6">
-                {comments.map((comment) => (
-                  <div key={comment.id} className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-gray-700 font-medium text-sm">
-                          {comment.username[0].toUpperCase()}
-                        </span>
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-gray-800">{displayAuthor(comment.username)}</span>
-                          <span className="text-xs text-gray-500">
-                            {formatDateTime(comment.created_at)}
+              </form>
+              
+              {comments.length > 0 ? (
+                <div className="space-y-6">
+                  {comments.map((comment) => (
+                    <div key={comment.id} className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
+                          <span className="text-gray-700 font-medium text-sm">
+                            {comment.username[0].toUpperCase()}
                           </span>
                         </div>
                         
-                        <div className="text-gray-700 mb-2">
-                          {comment.content.split('\n').map((paragraph, idx) => (
-                            paragraph ? <p key={idx} className="mb-1">{paragraph}</p> : <br key={idx} />
-                          ))}
-                        </div>
-                        
-                        {replyingTo !== comment.id && (
-                          <button
-                            onClick={() => startReply(comment.id)}
-                            className="text-indigo-600 text-sm font-medium flex items-center gap-1 hover:text-indigo-800"
-                          >
-                            <FiCornerDownRight size={14} />
-                            <span>Reply</span>
-                          </button>
-                        )}
-                        
-                        {replyingTo === comment.id && (
-                          <form onSubmit={handleReplySubmit} className="mt-3">
-                            <textarea
-                              value={replyText}
-                              onChange={(e) => setReplyText(e.target.value)}
-                              placeholder="Write your reply..."
-                              className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                              rows="2"
-                              disabled={submitting}
-                            />
-                            
-                            <div className="flex justify-end gap-2">
-                              <button
-                                type="button"
-                                onClick={cancelReply}
-                                className="py-1.5 px-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
-                              >
-                                Cancel
-                              </button>
-                              
-                              <button
-                                type="submit"
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-gray-800">{displayAuthor(comment.username)}</span>
+                            <span className="text-xs text-gray-500">
+                              {formatDateTime(comment.created_at)}
+                            </span>
+                          </div>
+                          
+                          <div className="text-gray-700 mb-2">
+                            {comment.content.split('\n').map((paragraph, idx) => (
+                              paragraph ? <p key={idx} className="mb-1">{paragraph}</p> : <br key={idx} />
+                            ))}
+                          </div>
+                          
+                          {replyingTo !== comment.id && (
+                            <button
+                              onClick={() => startReply(comment.id)}
+                              className="text-indigo-600 text-sm font-medium flex items-center gap-1 hover:text-indigo-800"
+                            >
+                              <FiCornerDownRight size={14} />
+                              <span>Reply</span>
+                            </button>
+                          )}
+                          
+                          {replyingTo === comment.id && (
+                            <form onSubmit={handleReplySubmit} className="mt-3">
+                              <textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder="Write your reply..."
+                                className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                rows="2"
                                 disabled={submitting}
-                                className="py-1.5 px-3 bg-indigo-600 rounded-lg text-white font-medium hover:bg-indigo-700 flex items-center gap-1"
-                              >
-                                <FiSend size={14} />
-                                <span>{submitting ? 'Posting...' : 'Post Reply'}</span>
-                              </button>
-                            </div>
-                          </form>
-                        )}
-                        
-                        {comment.replies && comment.replies.length > 0 && (
-                          <div className="mt-3 space-y-4 pl-4 border-l-2 border-gray-100">
-                            {comment.replies.map((reply) => (
-                              <div key={reply.id} className="flex items-start gap-3">
-                                <div className="w-6 h-6 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
-                                  <span className="text-gray-700 font-medium text-xs">
-                                    {reply.username[0].toUpperCase()}
-                                  </span>
-                                </div>
+                              />
+                              
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={cancelReply}
+                                  className="py-1.5 px-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+                                >
+                                  Cancel
+                                </button>
                                 
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-gray-800 text-sm">{displayAuthor(reply.username)}</span>
-                                    <span className="text-xs text-gray-500">
-                                      {formatDateTime(reply.created_at)}
+                                <button
+                                  type="submit"
+                                  disabled={submitting}
+                                  className="py-1.5 px-3 bg-indigo-600 rounded-lg text-white font-medium hover:bg-indigo-700 flex items-center gap-1"
+                                >
+                                  <FiSend size={14} />
+                                  <span>{submitting ? 'Posting...' : 'Post Reply'}</span>
+                                </button>
+                              </div>
+                            </form>
+                          )}
+                          
+                          {comment.replies && comment.replies.length > 0 && (
+                            <div className="mt-3 space-y-4 pl-4 border-l-2 border-gray-100">
+                              {comment.replies.map((reply) => (
+                                <div key={reply.id} className="flex items-start gap-3">
+                                  <div className="w-6 h-6 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
+                                    <span className="text-gray-700 font-medium text-xs">
+                                      {reply.username[0].toUpperCase()}
                                     </span>
                                   </div>
                                   
-                                  <div className="text-gray-700 text-sm">
-                                    {reply.content.split('\n').map((paragraph, idx) => (
-                                      paragraph ? <p key={idx} className="mb-1">{paragraph}</p> : <br key={idx} />
-                                    ))}
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span className="font-medium text-gray-800 text-sm">{displayAuthor(reply.username)}</span>
+                                      <span className="text-xs text-gray-500">
+                                        {formatDateTime(reply.created_at)}
+                                      </span>
+                                    </div>
+                                    
+                                    <div className="text-gray-700 text-sm">
+                                      {reply.content.split('\n').map((paragraph, idx) => (
+                                        paragraph ? <p key={idx} className="mb-1">{paragraph}</p> : <br key={idx} />
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                No comments yet. Be the first to comment!
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  No comments yet. Be the first to comment!
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+            <div className="p-6 text-center">
+              <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+                <FiMessageSquare />
+                Comments
+              </h2>
+              <p className="text-gray-600">
+                Comments are disabled for draft blogs. Publish your blog to enable comments.
+              </p>
+              {isAuthor && (
+                <button 
+                  onClick={handleEditClick}
+                  className="mt-4 flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 mx-auto"
+                >
+                  <FiEdit size={16} />
+                  <span>Edit Blog</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

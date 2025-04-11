@@ -57,6 +57,9 @@ const BlogList = () => {
     setAllFilter(option);
     if (option === 'all') {
       setFilteredBlogs(userData ? blogs : blogs.filter(blog => blog.status === 'published'));
+    } else if (option === 'myblogs') {
+      // Filter to show only the logged-in user's blogs
+      setFilteredBlogs(blogs.filter(blog => blog.author === userData.username));
     } else {
       setFilteredBlogs(blogs.filter(blog => blog.status === option));
     }
@@ -198,7 +201,7 @@ const BlogList = () => {
           
           {userData && (
             <div className="flex justify-center mb-3">
-              <div className="bg-white rounded-lg shadow-md p-1 inline-flex">
+              <div className="bg-white rounded-lg shadow-md p-1 inline-flex flex-wrap justify-center">
                 <button 
                   onClick={() => handleFilter('all')}
                   className={`px-4 py-2 rounded-md transition-all 
@@ -221,6 +224,14 @@ const BlogList = () => {
                     ${allfilter === 'draft' ? 'bg-indigo-500 text-white' : 'hover:bg-gray-300'}`}
                 >
                   Drafts
+                </button>
+
+                <button 
+                  onClick={() => handleFilter('myblogs')}
+                  className={`px-4 py-2 rounded-md transition-all 
+                    ${allfilter === 'myblogs' ? 'bg-indigo-500 text-white' : 'hover:bg-gray-300'}`}
+                >
+                  My Blogs
                 </button>
               </div>
             </div>

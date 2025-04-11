@@ -23,7 +23,6 @@ const BlogEdit = () => {
   });
 
   useEffect(() => {
-
     const fetchBlog = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
@@ -54,7 +53,7 @@ const BlogEdit = () => {
     };
 
     fetchBlog();
-  }, [backendUrl, userData]);
+  }, [backendUrl, userData, blog_id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,7 +92,7 @@ const BlogEdit = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await axios.put(
+      await axios.put(
         `${backendUrl}/blogs/${blog_id}/edit/`, 
         formData,
         {
@@ -107,12 +106,13 @@ const BlogEdit = () => {
       navigate(`/blogs`);
     } catch (error) {
       console.error('Error updating blog:', error);
-    //   handleApiError(error, navigate)
+      // handleApiError(error, navigate)
       if (error.response?.data?.message === 'Published posts cannot be changed to draft mood.') {
         toast.error('Published blogs cannot be changed to draft status');
       } else {
         toast.error(error.response?.data?.errors || 'Failed to update blog');
       }
+      setLoading(false);
     }
   };
 
@@ -124,7 +124,7 @@ const BlogEdit = () => {
     navigate('/');
     setTimeout(() => { 
         Logout();
-    },10);
+    }, 10);
   };
 
   return (
@@ -162,7 +162,7 @@ const BlogEdit = () => {
           <div className="flex items-center">
             <Link to={`/blogs`}
               className="mr-3 text-gray-600 hover:text-indigo-600 transition-colors">
-              <FiArrowLeft size={18} />
+              <FiArrowLeft size={25} />
             </Link>
             <h1 className="text-2xl font-bold text-gray-800">Edit Blog</h1>
           </div>
@@ -232,8 +232,7 @@ const BlogEdit = () => {
                 Status
               </label>
               <div className="flex gap-4">
-                <button type="button" onClick={
-                    () => handleStatusChange('draft')}
+                <button type="button" onClick={() => handleStatusChange('draft')}
                   disabled={initialStatus === 'published'}
                   className={`px-4 py-2 rounded-md transition-all flex items-center gap-2
                     ${initialStatus === 'published' 
@@ -262,6 +261,7 @@ const BlogEdit = () => {
             </div>
             
             <div className="flex justify-end gap-4">
+              {/* Also updated the cancel button to navigate to individual blog page */}
               <Link to={`/blogs`}
                 className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors">
                 Cancel

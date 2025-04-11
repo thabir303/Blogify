@@ -62,10 +62,10 @@ const BlogCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!userData) {
-        redirectToLoginWithReturnUrl();
-        return;
-    }
+    // if (!userData) {
+    //     redirectToLoginWithReturnUrl();
+    //     return;
+    // }
     if (!formData.title.trim()) {
       toast.error('Title is required');
       return;

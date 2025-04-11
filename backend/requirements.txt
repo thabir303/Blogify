@@ -1,0 +1,9 @@
+Django>=3.2
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+celery
+redis
+django-celery-beat
+python-dotenv
+argon2-cffi  
