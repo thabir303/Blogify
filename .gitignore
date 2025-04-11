@@ -6,3 +6,4 @@ __pycache__
 .dockerignore
 backend/blogify/db.sqlite3
 # /backend/blogify/db.sqlite3
+.vscode/
