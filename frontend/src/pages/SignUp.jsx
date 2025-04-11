@@ -21,7 +21,6 @@ function SignUp() {
       e.preventDefault();
       setLoading(true); 
 
-      // Use the apiClient instead of direct axios
       const response = await apiClient.post(`${backendUrl}/auth/register/`, {
         username,
         email,
@@ -49,7 +48,6 @@ function SignUp() {
     } catch (error) {
       setLoading(false);
       
-      // Display error message from the backend if available
       if (error.response && error.response.data) {
         if (error.response.data.email) {
           toast.error(`Email error: ${error.response.data.email[0]}`);

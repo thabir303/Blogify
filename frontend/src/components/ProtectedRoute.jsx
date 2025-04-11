@@ -1,10 +1,29 @@
-// src/components/ProtectedRoute.jsx
 import { Navigate, Outlet } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 
 const ProtectedRoute = () => {
-  const { isLoggedin, isLoading } = useContext(AppContext);
+  const { isLoggedin, userData, getAuthState } = useContext(AppContext);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (userData) {
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        await getAuthState();
+      } catch (error) {
+        console.error("Auth check failed:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuth();
+  }, [getAuthState, userData]);
   
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">

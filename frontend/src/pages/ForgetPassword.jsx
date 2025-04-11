@@ -21,19 +21,16 @@ const ForgetPassword = () => {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
 
-  // Initialize inputRefs when component mounts
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
   }, []);
 
   const handlePinChange = (e, index) => {
     const value = e.target.value;
-    // Update pinValues state
     const newPinValues = [...pinValues];
     newPinValues[index] = value;
     setPinValues(newPinValues);
     
-    // Handle auto-focus to next input
     if (value.length > 0 && index < 5) {
       inputRefs.current[index + 1].focus();
     }
@@ -59,7 +56,6 @@ const ForgetPassword = () => {
     
     setPinValues(newPinValues);
     
-    // Focus the appropriate input after paste
     if (pasteArray.length < 6) {
       inputRefs.current[pasteArray.length].focus();
     } else {
@@ -106,7 +102,6 @@ const ForgetPassword = () => {
         return;
       }
       
-      // Store pin for later use in password reset
       setPin(pin);
       setLoading(false);
       setShowNewPasswordForm(true);
@@ -133,7 +128,6 @@ const ForgetPassword = () => {
         return;
       }
       
-      // Use the stored pin instead of trying to read from refs
       const { data } = await axios.post(backendUrl + '/auth/password-reset-confirm/', {
         email,
         pin,
@@ -199,9 +193,7 @@ const ForgetPassword = () => {
           
           <div className="flex justify-between mb-8">
             {[0, 1, 2, 3, 4, 5].map((index) => (
-              <input
-                type="text"
-                maxLength="1"
+              <input type="text" maxLength="1"
                 key={index}
                 required
                 className="w-12 h-12 bg-[#333A5C] text-white text-center text-xl rounded-md"

@@ -57,7 +57,6 @@ const BlogDetails = () => {
         }
       } catch (error) {
         console.error('Error fetching blog details:', error);
-        // handleApiError(error, navigate)
         setError('Failed to load blog. It might be deleted or you may not have permission to view it.');
       } finally {
         setLoading(false);
@@ -84,7 +83,6 @@ const BlogDetails = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     
-    // Check if blog is a draft
     if (blog.status !== 'published') {
       toast.error('Comments are not allowed on draft blogs');
       return;
@@ -124,17 +122,15 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-      // handleApiError(error, navigate)
       toast.error('Failed to post comment');
     } finally {
-      setSubmitting(false);  // Reset submitting state regardless of success/failure
+      setSubmitting(false);
     }
   };
 
   const handleReplySubmit = async (e) => {
     e.preventDefault();
     
-    // Check if blog is a draft
     if (blog.status !== 'published') {
       toast.error('Comments are not allowed on draft blogs');
       return;
@@ -183,15 +179,13 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-      // handleApiError(error, navigate)
       toast.error('Failed to post reply');
     } finally {
-      setSubmitting(false);  // Reset submitting state regardless of success/failure
+      setSubmitting(false);
     }
   };
 
   const startReply = (commentId) => {
-    // Check if blog is a draft
     if (blog.status !== 'published') {
       toast.error('Comments are not allowed on draft blogs');
       return;
@@ -229,8 +223,8 @@ const BlogDetails = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex flex-col justify-center items-center">
-        <div className="text-red-600 font-medium mb-4">{error}</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex flex-col justify-center items-center p-4">
+        <div className="text-red-600 font-medium mb-4 text-center">{error}</div>
         <Link to="/blogs" className="text-indigo-600 hover:underline">
           Back to blogs
         </Link>
@@ -240,8 +234,8 @@ const BlogDetails = () => {
 
   if (!blog) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex flex-col justify-center items-center">
-        <div className="text-gray-600 font-medium mb-4">Blog not found</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex flex-col justify-center items-center p-4">
+        <div className="text-gray-600 font-medium mb-4 text-center">Blog not found</div>
         <Link to="/blogs" className="text-indigo-600 hover:underline">
           Back to blogs
         </Link>
@@ -255,7 +249,7 @@ const BlogDetails = () => {
     const paragraphs = content.split('\n');
     return paragraphs.map((paragraph, idx) => (
       paragraph ? 
-        <p key={idx} className="mb-5 leading-relaxed text-gray-700 text-lg">
+        <p key={idx} className="mb-5 leading-relaxed text-gray-700 text-base sm:text-lg">
           {paragraph}
         </p> 
         :  <br key={idx} /> ));
@@ -266,95 +260,94 @@ const BlogDetails = () => {
     navigate('/');
   };
 
-  // Determine if the current user is the author of the blog
   const isAuthor = isCurrentUser(blog.author);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
-      <div className='w-full flex justify-between items-center p-2 sm:py-1 sm:px-4 md:px-4 lg:px-16
+      <div className='w-full flex justify-between items-center p-2 sm:py-1 sm:px-4 md:px-6 lg:px-16
       z-50 transition-all duration-300'>
         <Link to="/" className="transition-transform duration-300 hover:scale-105">
-          <img src={assets.blogify} className='w-14 sm:w-12 md:w-20' alt="Blogify Logo" />
+          <img src={assets.blogify} className='w-12 sm:w-14 md:w-16 lg:w-20' alt="Blogify Logo" />
         </Link>
           
         {userData ? (
-          <div className='w-8 h-8 sm:w-9 sm:h-9 flex justify-center items-center rounded-full
+          <div className='w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 flex justify-center items-center rounded-full
           bg-black text-white relative group cursor-pointer
           transition-all duration-300 hover:shadow-md hover:scale-105'>
-          <span className='text-center font-medium'>{userData.username[0].toUpperCase()}</span>
-          <div className='absolute hidden group-hover:block top-0 right-0
-          z-10 text-black rounded pt-10 sm:pt-12'>
-              <ul className='list-none m-0 p-0 bg-white shadow-lg rounded-lg border border-gray-100 overflow-hidden w-28 sm:w-32'>
-                  <li
-                      onClick={handleLogout}  
-                      className='py-2 sm:py-3 px-3 sm:px-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200 text-gray-700 flex items-center gap-2'
-                  >
-                      <span className="w-4 h-4 flex items-center justify-center">
-                          <i className="fi fi-rr-sign-out text-xs"></i>
-                      </span>
-                      <span>Logout</span>
-                  </li>
-              </ul>
-          </div>
-      </div> 
-            ) 
-            : (
+            <span className='text-center text-xs sm:text-sm font-medium'>{userData.username[0].toUpperCase()}</span>
+            <div className='absolute hidden group-hover:block top-0 right-0
+            z-10 text-black rounded pt-8 sm:pt-10 md:pt-12'>
+                <ul className='list-none m-0 p-0 bg-white shadow-lg rounded-lg border border-gray-100 overflow-hidden w-24 sm:w-28 md:w-32'>
+                    <li
+                        onClick={handleLogout}  
+                        className='py-2 px-3 sm:py-2.5 sm:px-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200 text-gray-700 flex items-center gap-2 text-xs sm:text-sm'
+                    >
+                        <span className="w-3 h-3 sm:w-4 sm:h-4 flex items-center justify-center">
+                            <i className="fi fi-rr-sign-out text-xs"></i>
+                        </span>
+                        <span>Logout</span>
+                    </li>
+                </ul>
+            </div>
+          </div> 
+        ) 
+        : (
           <button onClick={() => navigate('/login')}
             className='group flex items-center gap-1 border border-black bg-white
-              rounded-full px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-800
-              transition-all duration-300 ease-in-out w-20 sm:w-24 h-8 sm:h-10 justify-center
+              rounded-full px-2 sm:px-3 md:px-4 lg:px-5 py-1 sm:py-1.5 md:py-2 text-xs md:text-sm text-gray-800
+              transition-all duration-300 ease-in-out w-16 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 lg:h-10 justify-center
               hover:shadow-md hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600'>
             <span className="font-medium">Login</span>
             <img src={assets.arrow_icon} alt=""
-              className='w-2.5 sm:w-3 h-2.5 sm:h-3 transition-transform duration-300 group-hover:translate-x-1'
+              className='w-2 sm:w-2.5 md:w-3 h-2 sm:h-2.5 md:h-3 transition-transform duration-300 group-hover:translate-x-1'
             />
           </button>
         )}
       </div>
       
-      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4">
-        <div className="flex justify-between items-center mb-4">
-          <Link to="/blogs" className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-            <FiArrowLeft />
+      <div className="max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <Link to="/blogs" className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 text-xs sm:text-sm md:text-base">
+            <FiArrowLeft size={12} className="sm:text-base md:text-lg" />
             <span>Back to blogs</span>
           </Link>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {blog.status === 'draft' && isAuthor && (
               <button 
                 onClick={handleEditClick}
-                className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-full"
+                className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm"
               >
-                <FiEdit size={14} />
+                <FiEdit size={12} className="sm:text-base" />
                 <span>Edit</span>
               </button>
             )}
             
-            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+            <div className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium
               ${blog.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
               {blog.status === 'published' ? (
-                <img src="/world.png" alt="Published" className="w-3 h-3" /> ) 
+                <img src="/world.png" alt="Published" className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> ) 
                 : (
-                <img src="/drafts (1).png" alt="Drafted" className="w-3 h-3" />
+                <img src="/drafts (1).png" alt="Drafted" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               )}
-              {blog.status === 'published' ? 'Published' : 'Draft'}
+              <span className="text-xs">{blog.status === 'published' ? 'Published' : 'Draft'}</span>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-          <div className="p-6">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 leading-tight">
+        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4 sm:mb-6">
+          <div className="p-3 sm:p-4 md:p-5 lg:p-6">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 sm:mb-3 md:mb-4 leading-tight">
               {blog.title}
             </h1>
             
-            <div className="flex items-center text-gray-600 text-sm mb-5">
+            <div className="flex items-center text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 md:mb-5">
               <span className="font-medium">By {isCurrentUser(blog.author) ? 'You' : blog.author}</span>
-              <span className="mx-2">•</span>
+              <span className="mx-1 sm:mx-2">•</span>
               <span>{formatDateTime(blog.created_at)}</span>
               {blog.updated_at !== blog.created_at && (
                 <>
-                  <span className="mx-2">•</span>
+                  <span className="mx-1 sm:mx-2">•</span>
                   <span>Updated {moment(blog.updated_at).fromNow()}</span>
                 </>
               )}
@@ -366,45 +359,40 @@ const BlogDetails = () => {
         </div>
         
         {blog.status === 'published' ? (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <FiMessageSquare />
-                Comments ({totalCommentsCount})
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4 sm:mb-6">
+            <div className="p-3 sm:p-4 md:p-5 lg:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-1 sm:gap-2">
+                <FiMessageSquare size={16} className="sm:text-lg md:text-xl" />
+                <span>Comments ({totalCommentsCount})</span>
               </h2>
               
-              <form onSubmit={handleCommentSubmit} className="mb-8">
-                <div className="flex items-start gap-3">
-                  <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center 
+              <form onSubmit={handleCommentSubmit} className="mb-6 sm:mb-8">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex-shrink-0 rounded-full flex items-center justify-center 
                     ${userData ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
                     {userData ? (
-                      userData.username[0].toUpperCase()
+                      <span className="text-xs sm:text-sm">{userData.username[0].toUpperCase()}</span>
                     ) : (
-                      <FiMessageSquare size={14} />
+                      <FiMessageSquare size={12} className="sm:text-sm" />
                     )}
                   </div>
                   
                   <div className="flex-1">
-                    <textarea
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
+                    <textarea value={commentText} onChange={(e) => setCommentText(e.target.value)}
                       placeholder={userData ? "Add a comment..." : "Login to comment"}
-                      className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      rows="3"
-                      disabled={!userData || submitting}
+                      className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+                      rows="3" disabled={!userData || submitting}
                     />
                     
                     <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        disabled={!userData || submitting}
+                      <button type="submit" disabled={!userData || submitting}
                         onClick={handleCommentSubmit}
-                        className={`flex items-center gap-1 py-2 px-4 rounded-lg font-medium
+                        className={`flex items-center gap-1 py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg font-medium text-xs sm:text-sm
                           ${userData 
                             ? 'bg-indigo-600 text-white hover:bg-indigo-700'
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                       >
-                        <FiSend size={16} />
+                        <FiSend size={14} className="sm:text-base" />
                         <span>{submitting ? 'Posting...' : 'Post Comment'}</span>
                       </button>
                     </div>
@@ -413,25 +401,25 @@ const BlogDetails = () => {
               </form>
               
               {comments.length > 0 ? (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {comments.map((comment) => (
-                    <div key={comment.id} className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-gray-700 font-medium text-sm">
+                    <div key={comment.id} className="border-b border-gray-100 pb-3 sm:pb-4 mb-3 sm:mb-4 last:border-0 last:mb-0 last:pb-0">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
+                          <span className="text-gray-700 font-medium text-xs sm:text-sm">
                             {comment.username[0].toUpperCase()}
                           </span>
                         </div>
                         
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-gray-800">{displayAuthor(comment.username)}</span>
+                          <div className="flex items-center gap-1 sm:gap-2 mb-1">
+                            <span className="font-medium text-gray-800 text-xs sm:text-sm">{displayAuthor(comment.username)}</span>
                             <span className="text-xs text-gray-500">
                               {formatDateTime(comment.created_at)}
                             </span>
                           </div>
                           
-                          <div className="text-gray-700 mb-2">
+                          <div className="text-gray-700 mb-2 text-xs sm:text-sm md:text-base">
                             {comment.content.split('\n').map((paragraph, idx) => (
                               paragraph ? <p key={idx} className="mb-1">{paragraph}</p> : <br key={idx} />
                             ))}
@@ -440,39 +428,34 @@ const BlogDetails = () => {
                           {replyingTo !== comment.id && (
                             <button
                               onClick={() => startReply(comment.id)}
-                              className="text-indigo-600 text-sm font-medium flex items-center gap-1 hover:text-indigo-800"
+                              className="text-indigo-600 text-xs sm:text-sm font-medium flex items-center gap-0.5 sm:gap-1 hover:text-indigo-800"
                             >
-                              <FiCornerDownRight size={14} />
+                              <FiCornerDownRight size={12} className="sm:text-sm" />
                               <span>Reply</span>
                             </button>
                           )}
                           
                           {replyingTo === comment.id && (
-                            <form onSubmit={handleReplySubmit} className="mt-3">
+                            <form onSubmit={handleReplySubmit} className="mt-2 sm:mt-3">
                               <textarea
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
                                 placeholder="Write your reply..."
-                                className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg mb-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-sm"
                                 rows="2"
                                 disabled={submitting}
                               />
                               
                               <div className="flex justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={cancelReply}
-                                  className="py-1.5 px-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
-                                >
+                                <button type="button" onClick={cancelReply}
+                                  className="py-1 sm:py-1.5 px-2 sm:px-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 text-xs sm:text-sm">
                                   Cancel
                                 </button>
                                 
-                                <button
-                                  type="submit"
-                                  disabled={submitting}
-                                  className="py-1.5 px-3 bg-indigo-600 rounded-lg text-white font-medium hover:bg-indigo-700 flex items-center gap-1"
+                                <button type="submit" disabled={submitting}
+                                  className="py-1 sm:py-1.5 px-2 sm:px-3 bg-indigo-600 rounded-lg text-white font-medium hover:bg-indigo-700 flex items-center gap-1 text-xs sm:text-sm"
                                 >
-                                  <FiSend size={14} />
+                                  <FiSend size={12} className="sm:text-sm" />
                                   <span>{submitting ? 'Posting...' : 'Post Reply'}</span>
                                 </button>
                               </div>
@@ -480,24 +463,24 @@ const BlogDetails = () => {
                           )}
                           
                           {comment.replies && comment.replies.length > 0 && (
-                            <div className="mt-3 space-y-4 pl-4 border-l-2 border-gray-100">
+                            <div className="mt-2 sm:mt-3 space-y-3 sm:space-y-4 pl-3 sm:pl-4 border-l-2 border-gray-100">
                               {comment.replies.map((reply) => (
-                                <div key={reply.id} className="flex items-start gap-3">
-                                  <div className="w-6 h-6 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
+                                <div key={reply.id} className="flex items-start gap-2 sm:gap-3">
+                                  <div className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 bg-gray-200 rounded-full flex items-center justify-center">
                                     <span className="text-gray-700 font-medium text-xs">
                                       {reply.username[0].toUpperCase()}
                                     </span>
                                   </div>
                                   
                                   <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className="font-medium text-gray-800 text-sm">{displayAuthor(reply.username)}</span>
+                                    <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+                                      <span className="font-medium text-gray-800 text-xs sm:text-sm">{displayAuthor(reply.username)}</span>
                                       <span className="text-xs text-gray-500">
                                         {formatDateTime(reply.created_at)}
                                       </span>
                                     </div>
                                     
-                                    <div className="text-gray-700 text-sm">
+                                    <div className="text-gray-700 text-xs sm:text-sm">
                                       {reply.content.split('\n').map((paragraph, idx) => (
                                         paragraph ? <p key={idx} className="mb-1">{paragraph}</p> : <br key={idx} />
                                       ))}
@@ -513,28 +496,28 @@ const BlogDetails = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-6 sm:py-8 text-gray-500 text-sm sm:text-base">
                   No comments yet. Be the first to comment!
                 </div>
               )}
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-            <div className="p-6 text-center">
-              <h2 className="text-xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
-                <FiMessageSquare />
-                Comments
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4 sm:mb-6">
+            <div className="p-3 sm:p-4 md:p-5 lg:p-6 text-center">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-1 sm:mb-2 flex items-center justify-center gap-1 sm:gap-2">
+                <FiMessageSquare size={16} className="sm:text-lg md:text-xl" />
+                <span>Comments</span>
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base">
                 Comments are disabled for draft blogs. Publish your blog to enable comments.
               </p>
               {isAuthor && (
-                <button 
-                  onClick={handleEditClick}
-                  className="mt-4 flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 mx-auto"
+                <button  onClick={handleEditClick}
+                  className="mt-3 sm:mt-4 flex items-center gap-1 bg-indigo-600
+                text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-indigo-700 mx-auto text-xs sm:text-sm"
                 >
-                  <FiEdit size={16} />
+                  <FiEdit size={14} className="sm:text-base" />
                   <span>Edit Blog</span>
                 </button>
               )}

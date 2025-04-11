@@ -91,16 +91,14 @@ function Login() {
 
           <div className="mb-4 flex items-center gap-2 xs:gap-3 w-full px-3 xs:px-4 sm:px-5 py-2 xs:py-2.5 rounded-full bg-[#333A5C]">
             <img src={assets.lock_icon} alt="" className="w-4 h-4 xs:w-5 xs:h-5" />
-            <input 
-              onChange={(e) => setPassword(e.target.value)} 
+            <input onChange={(e) => setPassword(e.target.value)} 
               value={password} 
               className="bg-transparent outline-none w-full text-xs xs:text-sm" 
               type={showPassword ? 'text' : 'password'} 
               placeholder="Password" 
               required 
             />
-            <img 
-              onClick={() => setShowPassword(!showPassword)} 
+            <img onClick={() => setShowPassword(!showPassword)} 
               src={showPassword ? assets.eye_open_icon : assets.eye_open_icon} 
               className="cursor-pointer w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6" 
               alt="toggle" 
@@ -116,8 +114,7 @@ function Login() {
           )}
         </form>
 
-        <p 
-          onClick={() => navigate('/forgot-password')} 
+        <p onClick={() => navigate('/forgot-password')} 
           className="mb-3 xs:mb-4 text-indigo-500 cursor-pointer text-xs xs:text-sm hover:text-indigo-400 transition-colors"
         >
           Forgot password?
