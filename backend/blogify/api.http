@@ -73,8 +73,8 @@ POST http://localhost:8000/api/auth/login/
 Content-Type: application/json
 
 {
-  "email": "th123@yopmail.com",
-  "password": "th123@yopmail.com"
+  "email": "bsse1321@iit.du.ac.bd",
+  "password": "bsse1321@iit.du.ac.bd"
 }
 
 ### blogs creation
@@ -101,7 +101,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 }
 
 ### blog details 
-GET http://localhost:8000/api/blogs/2/
+GET http://localhost:8000/api/blogs/29/
 Content-Type: application/json
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTM5Nzk5LCJpYXQiOjE3NDQxMzk0OTksImp0aSI6IjdmMjIxMjYwODhmNzRkYzY5N2MwODVjM2M1MDZhOTIwIiwidXNlcl9pZCI6NTl9.l_sMQASP4xCWqeFw-PAbPPoXj3loUCFZ47ViKQJxA7w
 
@@ -113,9 +113,9 @@ Content-Type: application/json
 
 
 ### blog edit 
-PUT http://localhost:8000/api/blogs/19/edit/
+PUT http://localhost:8000/api/blogs/28/edit/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTQzODk1LCJpYXQiOjE3NDQxNDM1OTUsImp0aSI6IjlkY2JhNWNjM2U0NzQ1NDA5OGFhMjBkYTNkODQwMzFmIiwidXNlcl9pZCI6NTl9.x9zN0NUXVcNXpIyASgE-9hw12kVFX3rbMHuei35F0D0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MzkxNzc4LCJpYXQiOjE3NDQzODgxNzgsImp0aSI6IjA5MTFkYjE1NzMwMTQ4N2FhMTFlNzU3ZWRkMjc5OTZlIiwidXNlcl9pZCI6NTl9.WWWmi6ZwHcql0DLYH6HLow8TNsjLl2NXSLijyBm_Tnk
 
 {
   "title": "Updated Blog Title",

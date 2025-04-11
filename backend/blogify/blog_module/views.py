@@ -9,7 +9,6 @@ from .serializers import BlogSerializer,CommentSerializer,ReplySerializer
 from .tasks import send_comment_notification_email
 
 
-
 class BlogListView(APIView):
     permission_classes = [AllowAny]
 
