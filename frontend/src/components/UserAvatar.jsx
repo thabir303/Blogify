@@ -26,8 +26,8 @@ const UserAvatar = () => {
             className='py-1.5 xs:py-2 sm:py-3 px-2 xs:px-3 sm:px-4 hover:bg-gray-50 
             cursor-pointer transition-colors duration-200 text-gray-700 flex items-center gap-1 xs:gap-2'
             >
-             <span className="w-3 h-3 xs:w-4 xs:h-4 flex items-center justify-center">
-                <i className="fi fi-rr-dashboard text-xxs xs:text-xs"></i>
+             <span className="w-3 h-3 xs:w-4 xs:h-4 flex items-center m-1 p-1 border justify-center">
+                <i className="fi fi-rr-dashboard text-xxs xs:text-xs "></i>
                 </span>
                  <span className="text-xs xs:text-sm">Dashboard</span>
                  </li>
@@ -36,10 +36,11 @@ const UserAvatar = () => {
                             transition-colors duration-200 text-gray-700 flex items-center gap-1 xs:gap-2 border-t 
                             border-gray-100'
                         >
-                        <span className="w-3 h-3 xs:w-4 xs:h-4 flex items-center justify-center">
-                            <i className="fi fi-rr-sign-out text-xxs xs:text-xs"></i>
+                        <span className="w-3 h-3 xs:w-4 xs:h-4 flex items-center m-1 p-1 justify-center">
+                            <i className="fi fi-rr-sign-out-alt text-xxs xs:text-xs"></i>
                         </span>
-                        <span className="text-xs xs:text-sm">Logout</span>
+                        <span className="text-xs xs:text-sm">
+                            Logout</span>
                         </li>
                             </ul>
                         </div>
