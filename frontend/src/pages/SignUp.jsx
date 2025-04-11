@@ -24,7 +24,7 @@ function SignUp() {
 
       axios.defaults.withCredentials = true;
 
-      const { data } = await apiClient.post(backendUrl + '/auth/register/', {
+      const { data } = await axios.post(backendUrl + '/auth/register/', {
         username,
         email,
         password,
@@ -50,7 +50,7 @@ function SignUp() {
       }
     } catch (error) {
       setLoading(false);
-      handleApiError(error,navigate)
+      // handleApiError(error,navigate)
     }
   };
 

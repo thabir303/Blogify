@@ -54,7 +54,7 @@ const EmailVerify = () => {
       const otpArray = inputRefs.current.map((e) => e.value);
       const pin = otpArray.join('');
 
-      const { data } = await apiClient.post(backendUrl + '/auth/activate/', 
+      const { data } = await axios.post(backendUrl + '/auth/activate/', 
         { email, pin });
 
       setLoading(false); 
@@ -67,8 +67,8 @@ const EmailVerify = () => {
       }
     } catch (error) {
       setLoading(false);
-      // toast.error(error.message);
-      handleApiError(error, navigate)
+      toast.error(error.message);
+      // handleApiError(error, navigate)
     }
   };
 

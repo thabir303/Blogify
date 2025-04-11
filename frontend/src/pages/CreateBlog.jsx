@@ -63,7 +63,7 @@ const BlogCreate = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await apiClient.post(
+      const response = await axios.post(
         `${backendUrl}/blogs/create/`, 
         formData,
         {
@@ -78,8 +78,8 @@ const BlogCreate = () => {
       navigate('/blogs');
     } catch (error) {
       console.error('Error creating blog:', error);
-    //   toast.error(error.response?.data?.errors || 'Failed to create blog');
-    handleApiError(error, navigate);
+      toast.error(error.response?.data?.errors || 'Failed to create blog');
+    // handleApiError(error, navigate);
     }
   };
 

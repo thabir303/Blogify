@@ -73,26 +73,26 @@ POST http://localhost:8000/api/auth/login/
 Content-Type: application/json
 
 {
-  "email": "farshid.kabir.23@gmail.com",
-  "password": "thisisnewPassword"
+  "email": "th123@yopmail.com",
+  "password": "th123@yopmail.com"
 }
 
 ### blogs creation
 POST http://localhost:8000/api/blogs/create/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MjM0Mjc3LCJpYXQiOjE3NDQyMzA2NzcsImp0aSI6IjYwOTFiM2Q0N2MzOTQzNmViODE4ZGMxYjdiMzNjMDYxIiwidXNlcl9pZCI6NTl9.Nxv15wQumX0EFm_hzO0XFHXa3sjby9gILKmfeOqEows
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MzY1MDUyLCJpYXQiOjE3NDQzNjE0NTIsImp0aSI6ImQ1MTgzNWE1MGViMjRhMTA5NzVlZjRiNjA3ODFkNzRhIiwidXNlcl9pZCI6Njl9.CNgRF5UCfc0yQZMBcbK4ceadE9zk31rnMeHlqeJCNGU
 
 {
   "title": "My last Blog Post",
   "content": "This is the content of my last blog post.",
-  "status": "published"
+  "status": "draft"
 }
 
 
 ### blog list 
 GET http://localhost:8000/api/blogs/
 Content-Type: application/json
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MTM5Nzk5LCJpYXQiOjE3NDQxMzk0OTksImp0aSI6IjdmMjIxMjYwODhmNzRkYzY5N2MwODVjM2M1MDZhOTIwIiwidXNlcl9pZCI6NTl9.l_sMQASP4xCWqeFw-PAbPPoXj3loUCFZ47ViKQJxA7w
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MzY1MDUyLCJpYXQiOjE3NDQzNjE0NTIsImp0aSI6ImQ1MTgzNWE1MGViMjRhMTA5NzVlZjRiNjA3ODFkNzRhIiwidXNlcl9pZCI6Njl9.CNgRF5UCfc0yQZMBcbK4ceadE9zk31rnMeHlqeJCNGU
 
 {
   "title": "My First Blog Post",

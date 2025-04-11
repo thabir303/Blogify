@@ -30,13 +30,13 @@ const BlogDetails = () => {
         let response;
         if (userData) {
           const accessToken = localStorage.getItem('access_token');
-          response = await apiClient.get(`${backendUrl}/blogs/${blog_id}/`, {
+          response = await axios.get(`${backendUrl}/blogs/${blog_id}/`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           });
         } else {
-          response = await apiClient.get(`${backendUrl}/blogs/${blog_id}/`);
+          response = await axios.get(`${backendUrl}/blogs/${blog_id}/`);
         }
         
         if (response.data.success) {
@@ -57,8 +57,8 @@ const BlogDetails = () => {
         }
       } catch (error) {
         console.error('Error fetching blog details:', error);
-        handleApiError(error, navigate)
-        // setError('Failed to load blog. It might be deleted or you may not have permission to view it.');
+        // handleApiError(error, navigate)
+        setError('Failed to load blog. It might be deleted or you may not have permission to view it.');
       }
     };
 
@@ -89,7 +89,7 @@ const BlogDetails = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await apiClient.post(
+      const response = await axios.post(
         `${backendUrl}/blogs/${blog_id}/comments/`,
         { content: commentText },
         {
@@ -109,8 +109,8 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-    handleApiError(error, navigate)
-    //   toast.error('Failed to post comment');
+    // handleApiError(error, navigate)
+      toast.error('Failed to post comment');
     } 
   };
 
@@ -136,7 +136,7 @@ const BlogDetails = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await apiClient.post(
+      const response = await axios.post(
         `${backendUrl}/comments/${replyingTo}/reply/`,
         { content: replyText },
         {
@@ -165,8 +165,8 @@ const BlogDetails = () => {
         setTotalCommentsCount(totalCommentsCount + 1);
       }
     } catch (error) {
-        handleApiError(error, navigate)
-    //   toast.error('Failed to post reply');
+        // handleApiError(error, navigate)
+      toast.error('Failed to post reply');
     }
   };
 

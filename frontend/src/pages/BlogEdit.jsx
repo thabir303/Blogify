@@ -27,7 +27,7 @@ const BlogEdit = () => {
     const fetchBlog = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
-        const response = await apiClient.get(
+        const response = await axios.get(
           `${backendUrl}/blogs/${blog_id}/`, 
           {
             headers: {
@@ -93,7 +93,7 @@ const BlogEdit = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await apiClient.put(
+      const response = await axios.put(
         `${backendUrl}/blogs/${blog_id}/edit/`, 
         formData,
         {
@@ -107,7 +107,7 @@ const BlogEdit = () => {
       navigate(`/blogs`);
     } catch (error) {
       console.error('Error updating blog:', error);
-      handleApiError(error, navigate)
+    //   handleApiError(error, navigate)
       if (error.response?.data?.message === 'Published posts cannot be changed to draft mood.') {
         toast.error('Published blogs cannot be changed to draft status');
       } else {
