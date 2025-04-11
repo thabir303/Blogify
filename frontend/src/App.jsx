@@ -4,7 +4,7 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import EmailVerify from './pages/EmailVerify'
-import ResetPassword from './pages/ResetPassword'
+import ResetPassword from './pages/ForgetPassword'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SignUp from './pages/SignUp'
@@ -35,7 +35,7 @@ const App = () => {
         <Route path ='/blogs' element={<BlogList/>} />
         <Route path="/blogs/:blog_id" element={<BlogDetails />} /> 
         <Route path ='/activate-email' element={<EmailVerify/>} />
-        <Route path ='/reset-password' element={<ResetPassword/>} />
+        <Route path ='/forgot-password' element={<ResetPassword/>} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/create-blog" element={<CreateBlog />} /> 

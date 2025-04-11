@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
   "email": "bsse1321@iit.du.ac.bd",
-  "password": "bsse1321@iit.du.ac.bd"
+  "password": "bsse1321@iit."
 }
 
 ### Password reset
@@ -40,8 +40,8 @@ Content-Type: application/json
 
 {
   "email": "bsse1321@iit.du.ac.bd",
-  "pin":"56RI95",
-  "new_password":"bsse1321@iit.du.ac.bd"
+  "pin":"7068R1",
+  "new_password":"bsse1321@iit."
 }
 
 
@@ -60,7 +60,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 ### logout
 POST http://localhost:8000/api/auth/logout/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQzOTMwMDIwLCJpYXQiOjE3NDM5Mjk3MjAsImp0aSI6IjZhNzFkYzk3YjgyZTQ5MjY4ZGNkZGJhZmI5ODY3ZTEzIiwidXNlcl9pZCI6NTl9.IiSfnKklELWui2MxfavqWQs9Nx9bQLkDSatthJ8gY8k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0Mzk0MDIwLCJpYXQiOjE3NDQzOTA0MjAsImp0aSI6IjQyZTAwMTI3ZTNlODRjMzZiNDI5ZjFkZTc5OTM0ZGE3IiwidXNlcl9pZCI6NTl9.MVVh_hvwMlCOoCNscNHctuzcIEsoWnw-TLCx-B90Qk0
 
 {
   "email": "farshid.kabir.23@gmail.com",

@@ -94,7 +94,7 @@ function Login() {
           )}
         </form>
 
-        <p onClick={() => navigate('/reset-password')} className="mb-4 text-indigo-500 cursor-pointer">
+        <p onClick={() => navigate('/forgot-password')} className="mb-4 text-indigo-500 cursor-pointer">
           Forgot password?
         </p>
 

@@ -18,9 +18,9 @@ class BlogListView(APIView):
         if request.user.is_authenticated:
             draft_blogs = Blog.objects.filter(author=request.user, status=Blog.DRAFT).select_related('author')
             combined_queryset = published_blogs.union(draft_blogs)
-            blogs = combined_queryset.order_by('-created_at')
+            blogs = combined_queryset.order_by('-updated_at')
         else:
-            blogs = published_blogs.order_by('-created_at')
+            blogs = published_blogs.order_by('-updated_at')
         
         serializer = BlogSerializer(blogs, many=True)
         response = Response({
