@@ -7,3 +7,5 @@ redis
 django-celery-beat
 python-dotenv
 argon2-cffi  
+gunicorn==20.1.0
+whitenoise==6.4.0
