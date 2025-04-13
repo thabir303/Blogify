@@ -78,7 +78,7 @@ const ForgetPassword = () => {
         return;
       }
       
-      const { data } = await axios.post(backendUrl + '/auth/password-reset/', { email });
+      const { data } = await axios.post(backendUrl + '/api/auth/password-reset/', { email });
       
       setLoading(false);
       toast.success('Password reset PIN sent to your email address');
@@ -128,7 +128,7 @@ const ForgetPassword = () => {
         return;
       }
       
-      const { data } = await axios.post(backendUrl + '/auth/password-reset-confirm/', {
+      const { data } = await axios.post(backendUrl + '/api/auth/password-reset-confirm/', {
         email,
         pin,
         new_password: newPassword

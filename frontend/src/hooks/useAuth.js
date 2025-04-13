@@ -23,7 +23,7 @@ const useAuth = () => {
               return Promise.reject(error);
             }
             
-            const response = await axios.post(`${backendUrl}/auth/token/refresh/`, {
+            const response = await axios.post(`${backendUrl}/api/auth/token/refresh/`, {
               refresh: refreshToken
             });
             
@@ -61,7 +61,7 @@ const useAuth = () => {
       }
       
       try {
-        const response = await axios.get(`${backendUrl}/auth/token/verify/`, {
+        const response = await axios.get(`${backendUrl}/api/auth/token/verify/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -90,7 +90,7 @@ const useAuth = () => {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post(`${backendUrl}/auth/login/`, { email, password });
+      const { data } = await axios.post(`${backendUrl}/api/auth/login/`, { email, password });
       
       if (data.success) {
         localStorage.setItem('access_token', data.access);
@@ -124,7 +124,7 @@ const useAuth = () => {
     setIsAuthenticated(false);
     setUserData(null);
     
-    axios.post(`${backendUrl}/auth/logout/`).catch(() => {
+    axios.post(`${backendUrl}/api/auth/logout/`).catch(() => {
     });
   };
 

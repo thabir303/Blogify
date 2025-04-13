@@ -30,7 +30,7 @@ const BlogEdit = () => {
       try {
         const accessToken = localStorage.getItem('access_token');
         const response = await axios.get(
-          `${backendUrl}/blogs/${blog_id}/`, 
+          `${backendUrl}/api/blogs/${blog_id}/`, 
           {
             headers: {
               'Authorization': `Bearer ${accessToken}`
@@ -91,7 +91,7 @@ const BlogEdit = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      await axios.put( `${backendUrl}/blogs/${blog_id}/edit/`, 
+      await axios.put( `${backendUrl}/api/blogs/${blog_id}/edit/`, 
         formData,
         {
           headers: {

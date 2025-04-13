@@ -18,7 +18,7 @@ const DashboardPage = () => {
       
       try {
         setLoading(true)
-        const response = await apiClient.get(`${backendUrl}/blogs/user/`)
+        const response = await apiClient.get(`${backendUrl}/api/blogs/user/`)
         
         if (response.data && response.data.success && Array.isArray(response.data.data)) {
           setBlogs(response.data.data)

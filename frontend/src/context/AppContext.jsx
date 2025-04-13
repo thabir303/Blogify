@@ -34,7 +34,7 @@ export const AppContextProvider = (props) =>{
         }
 
         try {
-            const response = await apiClient.get(backendUrl + '/auth/token/verify/',{
+            const response = await apiClient.get(backendUrl + '/api/auth/token/verify/',{
                 headers: {
                     Authorization:`Bearer ${accessToken}`,
                 },
@@ -54,7 +54,7 @@ export const AppContextProvider = (props) =>{
             console.error("Error:", error.response?.data || error.message);
             if (error.response && error.response.status === 401) {
                 try {
-                  const refreshResponse = await apiClient.post(backendUrl + '/auth/token/refresh/', {
+                  const refreshResponse = await apiClient.post(backendUrl + '/api/auth/token/refresh/', {
                     refresh: refreshToken,
                   });
         

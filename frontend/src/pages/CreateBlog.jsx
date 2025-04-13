@@ -79,7 +79,7 @@ const BlogCreate = () => {
     
     try {
       const accessToken = localStorage.getItem('access_token');
-      const response = await axios.post(`${backendUrl}/blogs/create/`, 
+      const response = await axios.post(`${backendUrl}/api/blogs/create/`, 
         formData,
         {
           headers: {

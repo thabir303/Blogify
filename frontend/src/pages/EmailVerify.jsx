@@ -54,7 +54,7 @@ const EmailVerify = () => {
       const otpArray = inputRefs.current.map((e) => e.value);
       const pin = otpArray.join('');
 
-      const { data } = await axios.post(backendUrl + '/auth/activate/', 
+      const { data } = await axios.post(backendUrl + '/api/auth/activate/', 
         { email, pin });
 
       setLoading(false); 

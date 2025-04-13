@@ -40,7 +40,7 @@ const BlogList = () => {
   const fetchBlogs = async (page = 1, filter = 'all') => {
     setLoading(true);
     try {
-      let url = `${backendUrl}/blogs/?page=${page}`;
+      let url = `${backendUrl}/api/blogs/?page=${page}`;
       
       if (filter !== 'all' && filter !== 'myblogs') {
         url += `&status=${filter}`;
@@ -89,7 +89,7 @@ const BlogList = () => {
   const handleDelete = async () => {
     try {
       const accessToken = localStorage.getItem('access_token');
-      await axios.delete(`${backendUrl}/blogs/${blogToDelete}/delete/`, {
+      await axios.delete(`${backendUrl}/api/blogs/${blogToDelete}/delete/`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

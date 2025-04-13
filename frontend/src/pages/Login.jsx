@@ -30,7 +30,7 @@ function Login() {
 
       axios.defaults.withCredentials = true;
 
-      const { data } = await axios.post(backendUrl + '/auth/login/', { email, password });
+      const { data } = await axios.post(backendUrl + '/api/auth/login/', { email, password });
 
       setLoading(false); 
 

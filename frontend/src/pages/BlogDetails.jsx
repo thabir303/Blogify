@@ -32,13 +32,13 @@ const BlogDetails = () => {
         let response;
         if (userData) {
           const accessToken = localStorage.getItem('access_token');
-          response = await axios.get(`${backendUrl}/blogs/${blog_id}/`, {
+          response = await axios.get(`${backendUrl}/api/blogs/${blog_id}/`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           });
         } else {
-          response = await axios.get(`${backendUrl}/blogs/${blog_id}/`);
+          response = await axios.get(`${backendUrl}/api/blogs/${blog_id}/`);
         }
         
         if (response.data.success) {
@@ -105,7 +105,7 @@ const BlogDetails = () => {
     try {
       const accessToken = localStorage.getItem('access_token');
       const response = await axios.post(
-        `${backendUrl}/blogs/${blog_id}/comments/`,
+        `${backendUrl}/api/blogs/${blog_id}/comments/`,
         { content: commentText },
         {
           headers: {
@@ -153,7 +153,7 @@ const BlogDetails = () => {
     try {
       const accessToken = localStorage.getItem('access_token');
       const response = await axios.post(
-        `${backendUrl}/comments/${replyingTo}/reply/`,
+        `${backendUrl}/api/comments/${replyingTo}/reply/`,
         { content: replyText },
         {
           headers: {
