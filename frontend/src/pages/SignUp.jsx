@@ -21,7 +21,7 @@ function SignUp() {
       e.preventDefault();
       setLoading(true); 
 
-      const response = await apiClient.post(`${backendUrl}/auth/register/`, {
+      const response = await apiClient.post(`${backendUrl}/api/auth/register/`, {
         username,
         email,
         password,
