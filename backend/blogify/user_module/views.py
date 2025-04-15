@@ -24,11 +24,11 @@ class UserRegistrationView(CreateAPIView):
         try:
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            print(f'perform_create called')
+            # print(f'perform_create called')
             user = serializer.save()
-            print(f'user - {user} , {user.password}')
+            # print(f'user - {user} , {user.password}')
             send_pin_number(user)
-            print("Hi")
+            # print("Hi")
             return Response({
                     'success': True,
                     'message': 'Registration successful! Please check your email to activate your account.',
@@ -68,7 +68,7 @@ class UserLoginView(APIView):
         email = request.data.get('email')
         password = request.data.get('password')
 
-        print(f'{email} - {password}')
+        # print(f'{email} - {password}')
         # user = authenticate(email=email,password=password)
         
         # print(f'user - {user}')
@@ -83,8 +83,8 @@ class UserLoginView(APIView):
                 },
                 status = status.HTTP_400_BAD_REQUEST)
         
-        print(f'userpassword - {user.password}')
-        print(f'check_password - {user.check_password(password)}')
+        # print(f'userpassword - {user.password}')
+        # print(f'check_password - {user.check_password(password)}')
         
         if user.check_password(password) and user.is_active:
             refresh = RefreshToken.for_user(user)
@@ -161,14 +161,14 @@ class TokenVerifyView(APIView):
 
         try:
             token = token_header.split(" ")[1]  
-            print(f"Received token: {token}") 
+            # print(f"Received token: {token}") 
 
             decoded_token = jwt.decode(token, options=
                                        {
                                            "verify_signature": False, 
                                            "verify_exp": True
                                        })
-            print(f"Decoded token: {decoded_token}") 
+            # print(f"Decoded token: {decoded_token}") 
 
             user_id = decoded_token.get('user_id')
             if user_id:

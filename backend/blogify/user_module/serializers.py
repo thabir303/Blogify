@@ -24,7 +24,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             # password = validate_data.pop('password')
             # user = get_user_model()(**validate_data)
             # user.set_password(password)
-            print("Validated Data:", validate_data)
+            # print("Validated Data:", validate_data)
             # print(f"Validated Data: {User}")
             password = validate_data.pop('password')
             try : 
@@ -34,14 +34,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                     password = password
                 )
                 # user.save()
-                print(f"User created: {user.email}")
-                print(f"Is user active: {user.is_active}")
-                print(f"Password hash length: {len(user.password)}")
-                print(f"Password hash starts with: {user.password[:10]}")
+                # print(f"User created: {user.email}")
+                # print(f"Is user active: {user.is_active}")
+                # print(f"Password hash length: {len(user.password)}")
+                # print(f"Password hash starts with: {user.password[:10]}")
 
                 return user
             except Exception as e:
-                print(f"Error creating user: {e}")
+                # print(f"Error creating user: {e}")
                 raise
 
         
