@@ -15,14 +15,14 @@ class BlogApiTestCase(APITestCase):
         
         self.user = User.objects.create_user(
             username='testuser',
-            email='test@example.com',
-            password='testpassword123'
+            email='test@gmail.com',
+            password='test@gmail.com'
         )
         
         self.another_user = User.objects.create_user(
             username='anotheruser',
-            email='another@example.com',
-            password='testpassword123'
+            email='anothertest@gmail.com',
+            password='anothertest@gmail.com'
         )
         
         self.published_blog = Blog.objects.create(
@@ -47,7 +47,7 @@ class BlogApiTestCase(APITestCase):
         
         self.client = APIClient()
     
-    def blog_list_unauthenticated(self):
+    def test_blog_list_unauthenticated(self):
         
         self.client.force_authenticate(user=None)
         
@@ -59,7 +59,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(len(response.data['data']), 1)  
         self.assertEqual(response.data['data'][0]['title'], 'Published Test Blog')
 
-    def blog_list_authenticated(self):
+    def test_blog_list_authenticated(self):
         
         self.client.force_authenticate(user=self.user)
         
@@ -70,7 +70,7 @@ class BlogApiTestCase(APITestCase):
         self.assertTrue(response.data['success'])
         self.assertEqual(len(response.data['data']), 2)  
 
-    def blog_list_with_filter(self):
+    def test_blog_list_with_filter(self):
         self.client.force_authenticate(user=self.user)
         
         url = reverse('blog_list') + '?status=draft'
@@ -81,7 +81,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(len(response.data['data']), 1)
         self.assertEqual(response.data['data'][0]['status'], Blog.DRAFT)
 
-    def blog_create_authenticated(self):
+    def test_blog_create_authenticated(self):
         
         self.client.force_authenticate(user=self.user)
         
@@ -99,7 +99,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(response.data['blog']['title'], 'New Test Blog')
         self.assertEqual(Blog.objects.count(), 3)
 
-    def blog_create_unauthenticated(self):
+    def test_blog_create_unauthenticated(self):
         
         self.client.force_authenticate(user=None)
         
@@ -115,7 +115,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(Blog.objects.count(), 2)  
 
-    def blog_detail_published(self):
+    def test_blog_detail_published(self):
         
         self.client.force_authenticate(user=None)
         
@@ -144,7 +144,7 @@ class BlogApiTestCase(APITestCase):
         expected_views = initial_views + 1
         self.assertEqual(self.published_blog.views, expected_views)
 
-    def blog_detail_draft(self):
+    def test_blog_detail_draft(self):
         
         url = reverse('blog_detail', kwargs={'blog_id': self.draft_blog.id})
         
@@ -162,7 +162,7 @@ class BlogApiTestCase(APITestCase):
         self.assertTrue(response.data['success'])
         self.assertEqual(response.data['blog']['id'], self.draft_blog.id)
 
-    def blog_edit_by_author(self):
+    def test_blog_edit_by_author(self):
         
         self.client.force_authenticate(user=self.user)
         
@@ -180,7 +180,7 @@ class BlogApiTestCase(APITestCase):
         self.published_blog.refresh_from_db()
         self.assertEqual(self.published_blog.title, 'Updated Test Blog')
 
-    def blog_edit_by_non_author(self):
+    def test_blog_edit_by_non_author(self):
         
         self.client.force_authenticate(user=self.another_user)
         
@@ -197,7 +197,7 @@ class BlogApiTestCase(APITestCase):
         self.published_blog.refresh_from_db()
         self.assertNotEqual(self.published_blog.title, 'Updated By Non-Author')
 
-    def blog_edit_published_to_draft(self):
+    def test_blog_edit_published_to_draft(self):
         
         self.client.force_authenticate(user=self.user)
         
@@ -213,7 +213,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertFalse(response.data['success'])
 
-    def blog_delete_by_author(self):
+    def test_blog_delete_by_author(self):
         
         self.client.force_authenticate(user=self.user)
         
@@ -225,7 +225,7 @@ class BlogApiTestCase(APITestCase):
         self.assertTrue(response.data['success'])
         self.assertEqual(Blog.objects.count(), 1)  
 
-    def blog_delete_by_non_author(self):
+    def test_blog_delete_by_non_author(self):
         
         self.client.force_authenticate(user=self.another_user)
         
@@ -237,7 +237,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(Blog.objects.count(), 2)  
 
     @patch('blog_module.views.send_comment_notification_email.delay')
-    def comment_create(self, mock_notification):
+    def test_comment_create(self, mock_notification):
         
         self.client.force_authenticate(user=self.user)
         
@@ -254,7 +254,7 @@ class BlogApiTestCase(APITestCase):
         
         mock_notification.assert_called_once()
 
-    def comment_reply(self):
+    def test_comment_reply(self):
         
         self.client.force_authenticate(user=self.user)
         
@@ -272,7 +272,7 @@ class BlogApiTestCase(APITestCase):
         self.assertEqual(replies.count(), 1)
         self.assertEqual(replies.first().content, 'This is a test reply')
 
-    def user_blogs(self):
+    def test_user_blogs(self):
         
         self.client.force_authenticate(user=self.user)
         

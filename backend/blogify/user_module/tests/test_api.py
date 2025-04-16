@@ -22,15 +22,15 @@ class UserAPITests(TestCase):
         
         self.user_data = {
             'username': 'testuser',
-            'email': 'test@example.com',
+            'email': 'test@gmail.com',
             'password': 'TestPassword123',
             'password2': 'TestPassword123' 
         }
         
         self.test_user = User.objects.create_user(
             username='existinguser', 
-            email='existing@example.com',
-            password='ExistingPass123'
+            email='existing@gmail.com',
+            password='existing@gmail.com'
         )
         self.test_user.is_active = True
         self.test_user.save()
@@ -50,7 +50,7 @@ class UserAPITests(TestCase):
     def test_user_registration_duplicate_email(self):
         duplicate_data = {
             'username': 'newuser',
-            'email': 'existing@example.com',  # Already exists
+            'email': 'existing@gmail.com',  
             'password': 'TestPassword123',
             'password2': 'TestPassword123'
         }
@@ -63,15 +63,15 @@ class UserAPITests(TestCase):
         
         inactive_user = User.objects.create_user(
             username='inactiveuser',
-            email='inactive@example.com',
-            password='InactivePass123'
+            email='inactive@gmail.com',
+            password='inactive@gmail.com'
         )
         inactive_user.is_active = False
         inactive_user.activation_pin = '123456'
         inactive_user.save()
         
         activation_data = {
-            'email': 'inactive@example.com',
+            'email': 'inactive@gmail.com',
             'pin': '123456'
         }
         
@@ -88,15 +88,15 @@ class UserAPITests(TestCase):
        
         inactive_user = User.objects.create_user(
             username='inactiveuser2',
-            email='inactive2@example.com',
-            password='InactivePass123'
+            email='inactive2@gmail.com',
+            password='inactive2@gmail.com'
         )
         inactive_user.is_active = False
         inactive_user.activation_pin = '123456'
         inactive_user.save()
         
         activation_data = {
-            'email': 'inactive2@example.com',
+            'email': 'inactive2@gmail.com',
             'pin': 'WRONG'
         }
         
@@ -108,23 +108,24 @@ class UserAPITests(TestCase):
         self.assertFalse(inactive_user.is_active)
 
     def test_user_login_success(self):
+        
         login_data = {
-            'email': 'existing@example.com',
-            'password': 'ExistingPass123'
+            'email': 'existing@gmail.com',
+            'password': 'existing@gmail.com'
         }
         
         response = self.client.post(self.login_url, login_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response.data['success'])
         self.assertEqual(response.data['message'], 'Login successful')
-        self.assertEqual(response.data['email'], 'existing@example.com')
+        self.assertEqual(response.data['email'], 'existing@gmail.com')
         self.assertEqual(response.data['username'], 'existinguser')
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
 
     def test_user_login_invalid_credentials(self):
         login_data = {
-            'email': 'existing@example.com',
+            'email': 'existing@gmail.com',
             'password': 'WrongPassword'
         }
         
@@ -134,7 +135,7 @@ class UserAPITests(TestCase):
 
     def test_user_login_nonexistent_user(self):
         login_data = {
-            'email': 'nonexistent@example.com',
+            'email': 'nonexistent@gmail.com',
             'password': 'SomePassword'
         }
         
@@ -145,7 +146,7 @@ class UserAPITests(TestCase):
     @patch('user_module.views.send_pin_number')
     def test_password_reset_request(self, mock_send_pin):
         reset_data = {
-            'email': 'existing@example.com'
+            'email': 'existing@gmail.com'
         }
         
         response = self.client.post(self.password_reset_request_url, reset_data, format='json')
@@ -155,7 +156,7 @@ class UserAPITests(TestCase):
 
     def test_password_reset_request_nonexistent_email(self):
         reset_data = {
-            'email': 'nonexistent@example.com'
+            'email': 'nonexistent@gmail.com'
         }
         
         response = self.client.post(self.password_reset_request_url, reset_data, format='json')
@@ -168,7 +169,7 @@ class UserAPITests(TestCase):
         self.test_user.save()
         
         reset_confirm_data = {
-            'email': 'existing@example.com',
+            'email': 'existing@gmail.com',
             'pin': '123456',
             'new_password': 'NewPassword123'
         }
@@ -181,7 +182,7 @@ class UserAPITests(TestCase):
         self.assertEqual(self.test_user.activation_pin, '')
         
         login_data = {
-            'email': 'existing@example.com',
+            'email': 'existing@gmail.com',
             'password': 'NewPassword123'
         }
         login_response = self.client.post(self.login_url, login_data, format='json')
@@ -193,7 +194,7 @@ class UserAPITests(TestCase):
         self.test_user.save()
         
         reset_confirm_data = {
-            'email': 'existing@example.com',
+            'email': 'existing@gmail.com',
             'pin': 'WRONG',
             'new_password': 'NewPassword123'
         }
@@ -205,8 +206,8 @@ class UserAPITests(TestCase):
     def test_token_verify_valid_token(self):
       
         login_data = {
-            'email': 'existing@example.com',
-            'password': 'ExistingPass123'
+            'email': 'existing@gmail.com',
+            'password': 'existing@gmail.com'
         }
         login_response = self.client.post(self.login_url, login_data, format='json')
         token = login_response.data['access']
@@ -217,7 +218,7 @@ class UserAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Token is valid')
         self.assertEqual(response.data['username'], 'existinguser')
-        self.assertEqual(response.data['email'], 'existing@example.com')
+        self.assertEqual(response.data['email'], 'existing@gmail.com')
 
     def test_token_verify_no_token(self):
         response = self.client.get(self.token_verify_url)
@@ -233,8 +234,8 @@ class UserAPITests(TestCase):
     def test_user_logout(self):
        
         login_data = {
-            'email': 'existing@example.com',
-            'password': 'ExistingPass123'
+            'email': 'existing@gmail.com',
+            'password': 'existing@gmail.com'
         }
         self.client.post(self.login_url, login_data, format='json')
         
@@ -252,7 +253,7 @@ class TokenEndpointsTests(TestCase):
         
         self.user = User.objects.create_user(
             username='jwtuser', 
-            email='jwt@example.com',
+            email='jwt@gmail.com',
             password='JWTPassword123'
         )
         self.user.is_active = True
@@ -261,7 +262,7 @@ class TokenEndpointsTests(TestCase):
     def test_login_and_use_token_for_protected_endpoint(self):
         
         login_data = {
-            'email': 'jwt@example.com',
+            'email': 'jwt@gmail.com',
             'password': 'JWTPassword123'
         }
         
@@ -281,4 +282,4 @@ class TokenEndpointsTests(TestCase):
         self.assertEqual(verify_response.status_code, status.HTTP_200_OK)
         self.assertEqual(verify_response.data['message'], 'Token is valid')
         self.assertEqual(verify_response.data['username'], 'jwtuser')
-        self.assertEqual(verify_response.data['email'], 'jwt@example.com')
+        self.assertEqual(verify_response.data['email'], 'jwt@gmail.com')
