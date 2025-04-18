@@ -101,11 +101,17 @@ WSGI_APPLICATION = 'blogify.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'blogify',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'db',  
+        'PORT': '5432',
     }
 }
-
+# read doc
+# swagger 
+# helping 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",  
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",  
