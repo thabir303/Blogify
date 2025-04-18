@@ -1,4 +1,3 @@
-
 # Blogify
 
 ## Overview
@@ -20,8 +19,9 @@ The backend handles authentication, blog CRUD operations, comment replies, and u
     3. [Comment APIs](#comment-apis)
     4. [Comment Reply APIs](#comment-reply-apis)
 3. [Project Setup](#project-setup)
-    1. [Backend Setup](#backend-setup)
-    2. [Frontend Setup](#frontend-setup)
+    1. [Docker Setup](#docker-setup) 
+    2. [Backend Setup](#backend-setup)
+    3. [Frontend Setup](#frontend-setup)
 4. [Environment Variables](#environment-variables)
 5. [License](#license)
 
@@ -38,6 +38,7 @@ The backend handles authentication, blog CRUD operations, comment replies, and u
 - **Flaticon**: Provides icons in the frontend.
 - **JWT**: For secure authentication.
 - **Axios**: For making HTTP requests from the frontend.
+- **Docker**: For containerization and easy deployment. 
 
 ## API Endpoints
 
@@ -289,7 +290,104 @@ The backend handles authentication, blog CRUD operations, comment replies, and u
 
 ## Project Setup
 
+### Docker Setup
+
+The fastest way to get Blogify up and running is using Docker, which handles all dependencies and services with minimal configuration.
+
+#### Prerequisites
+
+- Docker and Docker Compose installed on your system
+- Git installed on your system
+
+#### Quick Start
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/thabir303/Blogify.git
+   cd Blogify
+   ```
+
+2. **Environment Configuration**:
+   Create a `.env` file in the `backend` directory with the following content:
+
+   ```
+   # Django Settings
+   DEBUG=True
+   SECRET_KEY=asecretKEY
+
+   # Email Settings
+   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_USE_TLS=True
+   EMAIL_HOST_USER=your_email@gmail.com
+   EMAIL_HOST_PASSWORD=your_email_app_password
+
+   # Redis and Celery Settings
+   CELERY_BROKER_URL=redis://redis:6379/0
+   CELERY_RESULT_BACKEND=redis://redis:6379/0
+   ```
+
+3. **Launch the Application**:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Run Initial Setup**:
+   ```bash
+   # Run migrations
+   docker-compose exec backend python3 blogify/manage.py migrate
+
+   # Create a superuser (optional)
+   docker-compose exec backend python3 blogify/manage.py createsuperuser
+   ```
+
+5. **Access the Application**:
+   - Backend API: http://localhost:8000
+   - Frontend Application: http://localhost:5173
+   - Django Admin Panel: http://localhost:8000/admin
+
+#### Docker Services
+
+The Docker setup includes the following services:
+
+- **backend**: Django REST API
+- **frontend**: React with Vite
+- **db**: PostgreSQL database
+- **redis**: Redis for Celery message broker
+- **celery**: Celery worker for background tasks
+- **celery-beat**: Celery beat scheduler for periodic tasks
+
+#### Useful Docker Commands
+
+```bash
+# View running containers
+docker-compose ps
+
+# View service logs
+docker-compose logs backend
+docker-compose logs frontend
+
+# Stop all services
+docker-compose down
+
+# Restart services with rebuilt containers
+docker-compose up --build -d
+
+# Access shell in containers
+docker-compose exec backend bash
+docker-compose exec frontend sh
+```
+
+#### Troubleshooting
+
+- **Database Connection Issues**: Ensure the database service is running and check logs
+- **Redis Connection Issues**: Verify Redis is running and the connection URL is correct
+- **Frontend Build Errors**: Check frontend logs for build or runtime errors
+
 ### Backend Setup
+
+If you prefer to run the project without Docker, follow these steps:
 
 1. **Clone the repository**:
    ```bash
@@ -371,7 +469,7 @@ The backend handles authentication, blog CRUD operations, comment replies, and u
    npm run dev
    ```
 
-4. The frontend should now be running at `http://localhost:3000/`.
+4. The frontend should now be running at `http://localhost:5173/`.
 
 ## Environment Variables
 
