@@ -308,7 +308,7 @@ The fastest way to get Blogify up and running is using Docker, which handles all
    ```
 
 2. **Environment Configuration**:
-   Create a `.env` file in the `backend` directory with the following content:
+   Create a `.env` file in the `backend` and `frontend` directory with the following content:
 
    ```
    # Django Settings
@@ -326,14 +326,23 @@ The fastest way to get Blogify up and running is using Docker, which handles all
    # Redis and Celery Settings
    CELERY_BROKER_URL=redis://redis:6379/0
    CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+   # In frontend root directory
+   VITE_BACKEND_URL = 'http://localhost:8000/api'
    ```
 
-3. **Launch the Application**:
+3. **Install the frontend dependencies**:
+   ```bash
+   cd frontend
+   npm i
+   ```
+
+4. **Launch the Application**:
    ```bash
    docker-compose up -d
    ```
 
-4. **Run Initial Setup**:
+5. **Run Initial Setup**:
    ```bash
    # Run migrations
    docker-compose exec backend python3 blogify/manage.py migrate
@@ -342,7 +351,12 @@ The fastest way to get Blogify up and running is using Docker, which handles all
    docker-compose exec backend python3 blogify/manage.py createsuperuser
    ```
 
-5. **Access the Application**:
+6. **Build and start all services**:
+   ```bash
+   docker-compose up --build
+   ```
+
+7. **Access the Application**:
    - Backend API: http://localhost:8000
    - Frontend Application: http://localhost:5173
    - Django Admin Panel: http://localhost:8000/admin
@@ -439,8 +453,7 @@ If you prefer to run the project without Docker, follow these steps:
     ./run_celery.sh
     ```
 
-    3. In another terminal, start Celery beat:
-
+    4. In another terminal, start Celery beat:
     ```bash
     ./run_celery.sh beat
     ```
