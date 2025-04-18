@@ -7,3 +7,4 @@ redis
 django-celery-beat
 python-dotenv
 argon2-cffi  
+psycopg2-binary==2.9.5
