@@ -9,9 +9,9 @@ from django.contrib.auth import get_user_model, authenticate, logout
 from .serializers import UserRegistrationSerializer, ActivationSerializer
 from .utils import account_activate,send_pin_number
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.exceptions import ValidationError
-import jwt
 
 User = get_user_model()
 class UserRegistrationView(CreateAPIView):
@@ -161,14 +161,7 @@ class TokenVerifyView(APIView):
 
         try:
             token = token_header.split(" ")[1]  
-            # print(f"Received token: {token}") 
-
-            decoded_token = jwt.decode(token, options=
-                                       {
-                                           "verify_signature": False, 
-                                           "verify_exp": True
-                                       })
-            # print(f"Decoded token: {decoded_token}") 
+            decoded_token = JWTAuthentication().get_validated_token(token)
 
             user_id = decoded_token.get('user_id')
             if user_id:

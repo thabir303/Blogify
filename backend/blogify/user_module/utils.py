@@ -1,5 +1,6 @@
 # backend/blogify/user_module/utils.py
 from django.core.mail import send_mail
+from django.conf import settings
 from .models import CustomUser
 from django.utils.crypto import get_random_string
 
@@ -9,7 +10,7 @@ def send_pin_number(user):
     user.save()
     subject = 'Your PIN number to activate your account'
     message = f'Your activation PIN is {pin}. Do not share it with anyone.'
-    from_email = 'tanvirhasanabir8@gmail.com'
+    from_email = settings.EMAIL_HOST_USER
     send_mail(
         subject,
         message,

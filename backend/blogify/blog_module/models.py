@@ -25,8 +25,8 @@ class Blog(models.Model):
     
     def save(self, *args, **kwargs):
         if self.id:
-            old_one = Blog.objects.get(id=self.id)
-            if old_one.status == self.PUBLISHED and self.status == self.DRAFT:
+            old_one = Blog.objects.filter(id=self.id).first()
+            if old_one and old_one.status == self.PUBLISHED and self.status == self.DRAFT:
                 raise ValidationError('Published posts cannot be changed to draft mood.')
         super().save(*args, **kwargs)
     

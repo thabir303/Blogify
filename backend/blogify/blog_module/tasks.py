@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from .models import Blog
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 
 User = get_user_model()
@@ -45,7 +45,7 @@ def notify_users_of_new_blog():
    
     print("Starting notify_users_of_new_blog task")
 
-    one_hour_ago = timezone.now() - timedelta(Hours=12)
+    one_hour_ago = timezone.now() - timedelta(hours=12)
     new_blogs = Blog.objects.filter(created_at__gte=one_hour_ago, status=Blog.PUBLISHED)
     
     print(f"Found {new_blogs.count()} new blogs published in the last minute")
@@ -56,6 +56,7 @@ def notify_users_of_new_blog():
     
     active_users = User.objects.filter(is_active=True)
     print(f"Found {active_users.count()} active users to notify")
+    notification_count = 0
     
     for blog in new_blogs:
         subject = f"New Blog Post: {blog.title}"

@@ -31,9 +31,6 @@ function SignUp() {
       
       if (response.data.success) {
         toast.success(`Sign-Up successful! Check your mail to activate your account.`);
-        
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
 
         const userData = {
           username: response.data.username,
