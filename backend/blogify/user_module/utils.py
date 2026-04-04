@@ -62,6 +62,50 @@ def _send_with_resend(subject, message, recipient_email):
     return False
 
 
+def _send_with_brevo(subject, message, recipient_email):
+    api_key = getattr(settings, 'BREVO_API_KEY', '')
+    sender_email = getattr(settings, 'BREVO_FROM_EMAIL', '') or getattr(settings, 'DEFAULT_FROM_EMAIL', '')
+    sender_name = getattr(settings, 'BREVO_SENDER_NAME', 'Blogify')
+
+    if not api_key or not sender_email:
+        logger.error('Brevo fallback is not configured. Set BREVO_API_KEY and BREVO_FROM_EMAIL.')
+        return False
+
+    payload = json.dumps({
+        'sender': {
+            'name': sender_name,
+            'email': sender_email,
+        },
+        'to': [{'email': recipient_email}],
+        'subject': subject,
+        'textContent': message,
+    }).encode('utf-8')
+
+    request = urllib.request.Request(
+        'https://api.brevo.com/v3/smtp/email',
+        data=payload,
+        headers={
+            'api-key': api_key,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        method='POST',
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=getattr(settings, 'EMAIL_TIMEOUT', 10)) as response:
+            if 200 <= response.status < 300:
+                return True
+            logger.error('Brevo API returned status %s for %s', response.status, recipient_email)
+    except urllib.error.HTTPError as exc:
+        details = exc.read().decode('utf-8', errors='replace')
+        logger.error('Brevo API HTTP error %s for %s: %s', exc.code, recipient_email, details)
+    except Exception as exc:
+        logger.exception('Failed to send activation PIN via Brevo to %s: %s', recipient_email, exc)
+
+    return False
+
+
 def _log_render_smtp_hint(exc):
     if isinstance(exc, OSError) and getattr(exc, 'errno', None) in (101, 113):
         logger.error(
@@ -80,17 +124,25 @@ def send_pin_number(user):
     message = f'Your activation PIN is {pin}. Do not share it with anyone.'
 
     provider = getattr(settings, 'EMAIL_DELIVERY_PROVIDER', 'smtp').lower()
-    if provider not in {'smtp', 'resend'}:
+    if provider not in {'smtp', 'resend', 'brevo'}:
         logger.warning('Unknown EMAIL_DELIVERY_PROVIDER=%s. Falling back to smtp.', provider)
         provider = 'smtp'
 
-    delivery_order = [provider]
-    if provider == 'smtp':
-        delivery_order.append('resend')
-    else:
-        delivery_order.append('smtp')
+    fallback_routes = {
+        'smtp': ['smtp', 'resend', 'brevo'],
+        'resend': ['resend', 'brevo', 'smtp'],
+        'brevo': ['brevo', 'resend', 'smtp'],
+    }
+    delivery_order = fallback_routes[provider]
 
     for delivery_provider in delivery_order:
+        if delivery_provider == 'brevo':
+            if not getattr(settings, 'BREVO_API_KEY', ''):
+                continue
+            if _send_with_brevo(subject, message, user.email):
+                return True
+            continue
+
         if delivery_provider == 'resend':
             if not getattr(settings, 'RESEND_API_KEY', ''):
                 continue
