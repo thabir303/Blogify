@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -119,8 +120,10 @@ if USE_SQLITE:
         }
     }
 else:
+    database_url = os.getenv('DATABASE_URL')
     DATABASES = {
-        'default': {
+        'default': dj_database_url.parse(database_url, conn_max_age=600, ssl_require=True)
+        if database_url else {
             'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
             'NAME': os.getenv('DB_NAME', 'blogify'),
             'USER': os.getenv('DB_USER', 'user'),

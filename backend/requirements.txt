@@ -6,6 +6,7 @@ celery
 redis
 django-celery-beat
 python-dotenv
+dj-database-url
 argon2-cffi  
 psycopg[binary]>=3.2.10,<3.4
 gunicorn==22.0.0
