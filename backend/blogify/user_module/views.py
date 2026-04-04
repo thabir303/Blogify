@@ -28,11 +28,19 @@ class UserRegistrationView(CreateAPIView):
             user = serializer.save()
             # print(f'user - {user} , {user.password}')
             pin_sent = send_pin_number(user)
+
+            if not pin_sent:
+                user.delete()
+                return Response({
+                    'success': False,
+                    'message': 'Registration failed because activation email could not be sent. Please try again later.',
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
             # print("Hi")
             return Response({
                     'success': True,
-                    'message': 'Registration successful! Please check your email to activate your account.' if pin_sent else 'Registration successful, but activation email could not be sent right now. Please try again later.',
-                    'pin_sent': pin_sent,
+                    'message': 'Registration successful! Please check your email to activate your account.',
+                    'pin_sent': True,
                     'username': user.username,
                     'email': user.email,
             }, status=status.HTTP_200_OK)

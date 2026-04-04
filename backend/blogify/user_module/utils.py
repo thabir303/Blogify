@@ -3,6 +3,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import CustomUser
 from django.utils.crypto import get_random_string
+import logging
+
+logger = logging.getLogger(__name__)
 
 def send_pin_number(user):
     pin = get_random_string(length=6,allowed_chars='ABIR0123456789')
@@ -20,7 +23,8 @@ def send_pin_number(user):
             fail_silently=False,
         )
         return True
-    except Exception:
+    except Exception as exc:
+        logger.exception('Failed to send activation PIN email to %s: %s', user.email, exc)
         return False
 
 def account_activate(email,pin):
