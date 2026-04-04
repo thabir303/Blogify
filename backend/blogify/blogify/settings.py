@@ -121,17 +121,29 @@ if USE_SQLITE:
     }
 else:
     database_url = os.getenv('DATABASE_URL')
-    DATABASES = {
-        'default': dj_database_url.parse(database_url, conn_max_age=600, ssl_require=True)
-        if database_url else {
-            'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-            'NAME': os.getenv('DB_NAME', 'blogify'),
-            'USER': os.getenv('DB_USER', 'user'),
-            'PASSWORD': os.getenv('DB_PWD', 'password'),
-            'HOST': os.getenv('DB_HOST', 'db'),
-            'PORT': os.getenv('DB_PORT', '5432'),
+
+    if IS_RENDER:
+        # On Render, prefer DATABASE_URL from dashboard.
+        # If missing, fallback to sqlite so deploy/start won't crash from invalid DB_HOST values.
+        DATABASES = {
+            'default': dj_database_url.parse(database_url, conn_max_age=600, ssl_require=True)
+            if database_url else {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
         }
-    }
+    else:
+        DATABASES = {
+            'default': dj_database_url.parse(database_url, conn_max_age=600, ssl_require=False)
+            if database_url else {
+                'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+                'NAME': os.getenv('DB_NAME', 'blogify'),
+                'USER': os.getenv('DB_USER', 'user'),
+                'PASSWORD': os.getenv('DB_PWD', 'password'),
+                'HOST': os.getenv('DB_HOST', 'db'),
+                'PORT': os.getenv('DB_PORT', '5432'),
+            }
+        }
 # read doc
 # swagger 
 # helping 
