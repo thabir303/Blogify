@@ -6,7 +6,12 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()
+IS_RENDER = os.getenv('RENDER', '').lower() == 'true'
+
+# Render environment variables should come from dashboard config.
+# Avoid loading committed .env there to prevent stale local values from breaking deploys.
+if not IS_RENDER:
+    load_dotenv()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -99,7 +104,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'blogify.wsgi.application'
 
-USE_SQLITE = os.getenv('USE_SQLITE', 'False').lower() in ('true', '1', 'yes')
+use_sqlite_env = os.getenv('USE_SQLITE')
+if use_sqlite_env is None:
+    # On Render, if DB variables are not set yet, fallback to sqlite to avoid hard startup failures.
+    USE_SQLITE = IS_RENDER and not os.getenv('DB_HOST')
+else:
+    USE_SQLITE = use_sqlite_env.lower() in ('true', '1', 'yes')
 
 if USE_SQLITE:
     DATABASES = {
