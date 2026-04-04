@@ -8,6 +8,9 @@ from .models import Blog,Comment
 from .serializers import BlogSerializer,CommentSerializer,ReplySerializer
 from .tasks import send_comment_notification_email
 from rest_framework.pagination import PageNumberPagination
+import logging
+
+logger = logging.getLogger(__name__)
 
 class BlogPagination(PageNumberPagination):
     page_size = 9
@@ -185,10 +188,14 @@ class CommentCreateView(APIView):
             if serializer.is_valid():
                 comment = serializer.save(blog=blog, user = request.user)
 
-                send_comment_notification_email.delay(
-                    blog_id=blog.id,
-                    commenter_username=request.user.username,
-                    comment_content = comment.content)
+                try:
+                    send_comment_notification_email.delay(
+                        blog_id=blog.id,
+                        commenter_username=request.user.username,
+                        comment_content=comment.content,
+                    )
+                except Exception as exc:
+                    logger.warning('Comment created but notification task enqueue failed: %s', exc)
                 
                 response = Response({
                     'success': True,

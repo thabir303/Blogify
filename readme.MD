@@ -320,8 +320,17 @@ The fastest way to get Blogify up and running is using Docker, which handles all
    EMAIL_HOST=smtp.gmail.com
    EMAIL_PORT=587
    EMAIL_USE_TLS=True
+  EMAIL_USE_SSL=False
    EMAIL_HOST_USER=your_email@gmail.com
    EMAIL_HOST_PASSWORD=your_email_app_password
+  DEFAULT_FROM_EMAIL=your_email@gmail.com
+
+  # Delivery mode: smtp or resend
+  EMAIL_DELIVERY_PROVIDER=smtp
+
+  # Optional Resend config (recommended on Render Free)
+  RESEND_API_KEY=
+  RESEND_FROM_EMAIL=onboarding@resend.dev
 
    # Redis and Celery Settings
    CELERY_BROKER_URL=redis://redis:6379/0
@@ -330,6 +339,10 @@ The fastest way to get Blogify up and running is using Docker, which handles all
    # In frontend root directory
    VITE_BACKEND_URL = 'http://localhost:8000/api'
    ```
+
+    Render Free limitation: outbound SMTP traffic on ports 25/465/587 is blocked.
+    If your backend runs on Render Free, either upgrade to a paid instance or use
+    `EMAIL_DELIVERY_PROVIDER=resend` with a valid `RESEND_API_KEY`.
 
 3. **Install the frontend dependencies**:
    ```bash
