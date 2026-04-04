@@ -116,13 +116,7 @@ def _log_render_smtp_hint(exc):
         )
 
 
-def send_pin_number(user):
-    pin = get_random_string(length=6, allowed_chars='ABIR0123456789')
-    user.activation_pin = pin
-    user.save()
-    subject = 'Your PIN number to activate your account'
-    message = f'Your activation PIN is {pin}. Do not share it with anyone.'
-
+def send_plain_email(subject, message, recipient_email):
     provider = getattr(settings, 'EMAIL_DELIVERY_PROVIDER', 'smtp').lower()
     if provider not in {'smtp', 'resend', 'brevo'}:
         logger.warning('Unknown EMAIL_DELIVERY_PROVIDER=%s. Falling back to smtp.', provider)
@@ -139,26 +133,35 @@ def send_pin_number(user):
         if delivery_provider == 'brevo':
             if not getattr(settings, 'BREVO_API_KEY', ''):
                 continue
-            if _send_with_brevo(subject, message, user.email):
+            if _send_with_brevo(subject, message, recipient_email):
                 return True
             continue
 
         if delivery_provider == 'resend':
             if not getattr(settings, 'RESEND_API_KEY', ''):
                 continue
-            if _send_with_resend(subject, message, user.email):
+            if _send_with_resend(subject, message, recipient_email):
                 return True
             continue
 
         try:
-            if _send_with_smtp(subject, message, user.email):
+            if _send_with_smtp(subject, message, recipient_email):
                 return True
         except Exception as exc:
             _log_render_smtp_hint(exc)
-            logger.exception('Failed to send activation PIN email to %s via SMTP: %s', user.email, exc)
+            logger.exception('Failed to send email to %s via SMTP: %s', recipient_email, exc)
 
-    logger.error('All email delivery methods failed for %s', user.email)
+    logger.error('All email delivery methods failed for %s', recipient_email)
     return False
+
+
+def send_pin_number(user):
+    pin = get_random_string(length=6, allowed_chars='ABIR0123456789')
+    user.activation_pin = pin
+    user.save()
+    subject = 'Your PIN number to activate your account'
+    message = f'Your activation PIN is {pin}. Do not share it with anyone.'
+    return send_plain_email(subject, message, user.email)
 
 
 def account_activate(email, pin):

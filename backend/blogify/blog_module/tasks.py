@@ -1,9 +1,8 @@
 # backend/blogify/blog_module/tasks.py
 from celery import shared_task
-from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
-from django.conf import settings
 from .models import Blog
+from user_module.utils import send_plain_email
 from datetime import timedelta
 from django.utils import timezone
 
@@ -29,12 +28,9 @@ def send_comment_notification_email(blog_id, commenter_username, comment_content
         Regards,
         Blogify
         '''
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[blog_owner.email],
-        )
+        sent = send_plain_email(subject=subject, message=message, recipient_email=blog_owner.email)
+        if not sent:
+            return f"Failed to send email to {blog_owner.email}"
         
         return f"Email notification sent to {blog_owner.email}"
     except Exception as e:
@@ -82,17 +78,15 @@ def notify_users_of_new_blog():
         Regards,
         Blogify
         '''
-        try:
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=recipients,
-                fail_silently=False,
-            )
+        success_count = 0
+        for recipient in recipients:
+            if send_plain_email(subject=subject, message=message, recipient_email=recipient):
+                success_count += 1
+            else:
+                print(f"Failed to send email for blog '{blog.title}' to {recipient}")
+
+        if success_count:
             notification_count += 1
-            print(f"Successfully sent notification for blog: {blog.title}")
-        except Exception as e:
-            print(f"Failed to send email for blog '{blog.title}': {str(e)}")
+            print(f"Successfully sent {success_count} notifications for blog: {blog.title}")
     
     return f"Notified users about {notification_count} new blog posts"
