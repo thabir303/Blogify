@@ -11,12 +11,17 @@ def send_pin_number(user):
     subject = 'Your PIN number to activate your account'
     message = f'Your activation PIN is {pin}. Do not share it with anyone.'
     from_email = settings.EMAIL_HOST_USER
-    send_mail(
-        subject,
-        message,
-        from_email,
-        [user.email],
-    )
+    try:
+        send_mail(
+            subject,
+            message,
+            from_email,
+            [user.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception:
+        return False
 
 def account_activate(email,pin):
 

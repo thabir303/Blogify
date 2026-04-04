@@ -27,11 +27,12 @@ class UserRegistrationView(CreateAPIView):
             # print(f'perform_create called')
             user = serializer.save()
             # print(f'user - {user} , {user.password}')
-            send_pin_number(user)
+            pin_sent = send_pin_number(user)
             # print("Hi")
             return Response({
                     'success': True,
-                    'message': 'Registration successful! Please check your email to activate your account.',
+                    'message': 'Registration successful! Please check your email to activate your account.' if pin_sent else 'Registration successful, but activation email could not be sent right now. Please try again later.',
+                    'pin_sent': pin_sent,
                     'username': user.username,
                     'email': user.email,
             }, status=status.HTTP_200_OK)
@@ -117,7 +118,9 @@ class PasswordResetRequestView(APIView):
         except User.DoesNotExist:
             return Response({"error": "Email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         
-        send_pin_number(user)
+        pin_sent = send_pin_number(user)
+        if not pin_sent:
+            return Response({"error": "Could not send reset email right now. Please try again later."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response({"message":"Password reset PIN sent to your email address."},status=status.HTTP_200_OK)
     
 class PasswordResetConfirmView(APIView):
