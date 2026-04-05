@@ -1,7 +1,182 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Sora:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-* { font-family: "Outfit", sans-serif;
+
+:root {
+	--auth-bg-start: #dbeafe;
+	--auth-bg-mid: #bfdbfe;
+	--auth-bg-end: #a5b4fc;
+	--auth-card-bg-start: rgba(15, 23, 42, 0.94);
+	--auth-card-bg-end: rgba(30, 41, 59, 0.9);
+	--auth-input-bg: rgba(51, 58, 92, 0.88);
+	--auth-border: rgba(148, 163, 184, 0.24);
+	--auth-highlight: #60a5fa;
+	--auth-highlight-strong: #1d4ed8;
+	--auth-text-muted: #b8c6ee;
+	--auth-card-shadow: 0 24px 60px -32px rgba(15, 23, 42, 0.9);
+}
+
+* {
+	font-family: "Outfit", sans-serif;
+}
+
+body {
+	margin: 0;
+}
+
+.auth-shell {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(
+		140deg,
+		var(--auth-bg-start) 0%,
+		var(--auth-bg-mid) 48%,
+		var(--auth-bg-end) 100%
+	);
+}
+
+.auth-shell::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(circle at 18% 18%, rgba(96, 165, 250, 0.33), transparent 42%),
+		radial-gradient(circle at 84% 12%, rgba(56, 189, 248, 0.24), transparent 34%),
+		radial-gradient(circle at 50% 86%, rgba(129, 140, 248, 0.26), transparent 36%);
+}
+
+.auth-orb {
+	position: absolute;
+	z-index: 0;
+	border-radius: 9999px;
+	pointer-events: none;
+	opacity: 0.8;
+	filter: blur(2px);
+	animation: auth-drift 11s ease-in-out infinite;
+}
+
+.auth-orb-one {
+	top: 12%;
+	left: 8%;
+	width: 16rem;
+	height: 16rem;
+	background: radial-gradient(circle, rgba(59, 130, 246, 0.38), rgba(59, 130, 246, 0.02) 72%);
+}
+
+.auth-orb-two {
+	right: 7%;
+	bottom: 10%;
+	width: 14rem;
+	height: 14rem;
+	background: radial-gradient(circle, rgba(14, 165, 233, 0.3), rgba(14, 165, 233, 0.02) 70%);
+	animation-delay: 1.4s;
+}
+
+@keyframes auth-drift {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0);
+	}
+	50% {
+		transform: translate3d(0, -12px, 0);
+	}
+}
+
+.auth-card {
+	position: relative;
+	z-index: 1;
+	border: 1px solid var(--auth-border);
+	background: linear-gradient(160deg, var(--auth-card-bg-start) 0%, var(--auth-card-bg-end) 100%);
+	box-shadow: var(--auth-card-shadow);
+	backdrop-filter: blur(10px);
+	animation: auth-enter 0.38s ease-out;
+}
+
+@keyframes auth-enter {
+	0% {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.auth-logo-btn {
+	z-index: 1;
+	border: 1px solid rgba(148, 163, 184, 0.22);
+	background: rgba(255, 255, 255, 0.42);
+	border-radius: 9999px;
+	padding: 0.45rem;
+	backdrop-filter: blur(8px);
+}
+
+.auth-title {
+	font-family: "Sora", "Outfit", sans-serif;
+	letter-spacing: 0.01em;
+}
+
+.auth-subtitle {
+	color: var(--auth-text-muted);
+}
+
+.auth-input-wrap {
+	border: 1px solid transparent;
+	background: var(--auth-input-bg);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.auth-input-wrap:focus-within {
+	border-color: rgba(96, 165, 250, 0.72);
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.24);
+	transform: translateY(-1px);
+}
+
+.auth-input::placeholder {
+	color: #94a3b8;
+}
+
+.auth-primary-btn {
+	background-image: linear-gradient(100deg, var(--auth-highlight) 0%, var(--auth-highlight-strong) 100%);
+	box-shadow: 0 12px 24px -14px rgba(29, 78, 216, 0.95);
+	transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.auth-primary-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 16px 30px -16px rgba(29, 78, 216, 0.95);
+	filter: brightness(1.03);
+}
+
+.auth-primary-btn:active {
+	transform: translateY(0);
+}
+
+.auth-link {
+	color: #93c5fd;
+	transition: color 0.18s ease;
+}
+
+.auth-link:hover {
+	color: #dbeafe;
+}
+
+.auth-note {
+	color: #9aa9ce;
+}
+
+@media (max-width: 640px) {
+	.auth-orb-one {
+		width: 11rem;
+		height: 11rem;
+	}
+
+	.auth-orb-two {
+		width: 10rem;
+		height: 10rem;
+	}
 }
