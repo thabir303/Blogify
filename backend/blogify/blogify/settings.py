@@ -39,6 +39,8 @@ if IS_RENDER:
 
 AUTH_USER_MODEL = 'user_module.CustomUser'
 
+ENABLE_CELERY = os.getenv('ENABLE_CELERY', 'False').lower() in ('true', '1', 'yes')
+
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
@@ -46,7 +48,8 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+if ENABLE_CELERY:
+    CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
@@ -84,8 +87,10 @@ INSTALLED_APPS = [
     'user_module',
     'corsheaders',
     'blog_module',
-    "django_celery_beat",
 ]
+
+if ENABLE_CELERY:
+    INSTALLED_APPS.append('django_celery_beat')
 
 # CORS_ALLOW_ALL_ORIGINS = True 
 

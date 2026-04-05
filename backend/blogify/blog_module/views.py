@@ -1,5 +1,6 @@
 # backend/blogify/blog_module/views.py
 from django.shortcuts import render
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response 
 from rest_framework.views import APIView
@@ -188,14 +189,15 @@ class CommentCreateView(APIView):
             if serializer.is_valid():
                 comment = serializer.save(blog=blog, user = request.user)
 
-                try:
-                    send_comment_notification_email.delay(
-                        blog_id=blog.id,
-                        commenter_username=request.user.username,
-                        comment_content=comment.content,
-                    )
-                except Exception as exc:
-                    logger.warning('Comment created but notification task enqueue failed: %s', exc)
+                if getattr(settings, 'ENABLE_CELERY', False):
+                    try:
+                        send_comment_notification_email.delay(
+                            blog_id=blog.id,
+                            commenter_username=request.user.username,
+                            comment_content=comment.content,
+                        )
+                    except Exception as exc:
+                        logger.warning('Comment created but notification task enqueue failed: %s', exc)
                 
                 response = Response({
                     'success': True,
